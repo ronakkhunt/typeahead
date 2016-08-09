@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 import com.typeahead.index.Document;
 import com.typeahead.index.Index;
+import com.typeahead.reader.services.IndexReaderService;
 import com.typeahead.writer.IndexWriterUtil;
 
 
@@ -20,7 +21,11 @@ import com.typeahead.writer.IndexWriterUtil;
  */
 public class IndexReader {
 	
-	static ObjectMapper mapper = new ObjectMapper();
+	IndexReaderService readerService;
+	
+	public IndexReader() {
+		readerService = new IndexReaderService();
+	}
 	
 	public Index createIndex(String indexName) {
 		return new Index(indexName);
@@ -28,6 +33,7 @@ public class IndexReader {
 	
 	@SuppressWarnings("unchecked")
 	public Index openIndex(String indexName) {
+		
 		//TODO: this should throw "IndexDoesNotExist" Exception
 		
 		Index index = new Index(indexName);
@@ -36,21 +42,10 @@ public class IndexReader {
 		File fieldFSTMap = IndexWriterUtil.getFieldFSTMapFile(index);
 		File mapping = IndexWriterUtil.getMappingFile(index);
 		
-		try {
-			index.setDataMap(mapper.readValue(indexDataMap,  HashMap.class));
-			index.setFieldFSTMap(mapper.readValue(fieldFSTMap, HashMap.class));
-			index.recoverMapping(mapper.readValue(mapping, HashMap.class));
-			
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		index.setDataMap(readerService.read(indexDataMap, HashMap.class));
+		index.setFieldFSTMap(readerService.read(fieldFSTMap, HashMap.class));
+		index.recoverMapping(readerService.read(mapping, HashMap.class));
+
 		return index;
 	}
 	

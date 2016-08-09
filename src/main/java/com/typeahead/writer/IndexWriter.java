@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typeahead.index.Index;
+import com.typeahead.writer.services.IndexWriterService;
 
 
 /**
@@ -16,10 +17,10 @@ import com.typeahead.index.Index;
  *
  */
 public class IndexWriter {
-	ObjectMapper mapper;
 	
+	IndexWriterService writerServices;
 	public IndexWriter(){
-		mapper = new ObjectMapper();
+		writerServices = new IndexWriterService();
 	}
 	
 	public void writeIndex(Index index) {
@@ -28,19 +29,9 @@ public class IndexWriter {
 		File fieldFSTMap = IndexWriterUtil.getFieldFSTMapFile(index);
 		File mapping = IndexWriterUtil.getMappingFile(index);
 		
-		try {
-			mapper.writeValue(indexDataMap, index.getDataMap());
-			mapper.writeValue(fieldFSTMap, index.getFieldFSTMap());
-			mapper.writeValue(mapping, index.getMapping());
-		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		writerServices.write(indexDataMap, index.getDataMap());
+		writerServices.write(fieldFSTMap, index.getFieldFSTMap());
+		writerServices.write(mapping, index.getMapping());
+		
 	}
 }
