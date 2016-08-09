@@ -11,7 +11,7 @@ import com.typeahead.index.IndexState;
 import com.typeahead.tokens.util.TokenUtils;
 
 /**
- * This Service will have all the methods to index/add data into fieldFSTMap
+ * Service layer containing core logic for indexing data into {@link Index#fieldFSTMap}
  * @author ronakkhunt
  *
  */

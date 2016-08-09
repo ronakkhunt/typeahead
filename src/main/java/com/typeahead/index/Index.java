@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.typeahead.index.services.IndexAddService;
 
 /**
- * This class will be user to reference any index and store metadata about the index.
+ * This class will be used to reference any index and store metadata about the index.
  * @author ronakkhunt
  *
  */
@@ -19,12 +19,30 @@ public class Index {
 	
 	String name;
 	
+	/**
+	 * Base Path to store all the index data.
+	 */
 	String dataDirectory;
 	
+	/**
+	 * FST Search map for each mapped field as per {@link Index#mapping}
+	 * <b>Key</b> here is name of field (ognl) and <b>Value</b> is FST map for that field.
+	 */
 	Map<String, Map<String, Map<Character, IndexState>>> fieldFSTMap;
 	
+	/**
+	 * key-value pair of indexed data.<br>
+	 * <b>Key</b> here is {@link Document#id} and
+	 * <b>Value</b> is {@link Document} itself.
+	 * 
+	 */
 	Map<String, Document> dataMap;
 	
+	/**
+	 * key-value pair to specify field to be searched.
+	 * <b>Key</b> is name of the field.
+	 * <b>Value</b> is of no use as of now.
+	 */
 	Map<String, String> mapping;
 	
 	public Index(String name){
@@ -37,6 +55,10 @@ public class Index {
 		dataDirectory = "/usr/local/typeahead/";
 	}
 	
+	/**
+	 * Method to add {@link Document}, which contains data, into Index to make it Search-able.
+	 * @param document
+	 */
 	public void add(Document document) {
 		String id = document.getId();
 		if(!dataMap.containsKey(id)){
@@ -51,6 +73,10 @@ public class Index {
 		}
 	}
 	
+	/**
+	 * Method to remove any {@link Document} from index.
+	 * @param documentId
+	 */
 	public void delete(String documentId) {
 		//deleting data from data map
 		dataMap.remove(documentId);
@@ -76,6 +102,11 @@ public class Index {
 		
 	}
 	
+	/**
+	 * Return the FST map for given field.
+	 * @param field
+	 * @return
+	 */
 	public Map<String, Map<Character, IndexState>> getFieldFSTMap(String field) {
 		return this.fieldFSTMap.get(field);
 	}
@@ -123,7 +154,7 @@ public class Index {
 		this.mapping = mapping;
 		
 		for(String field: _getMappedField()){
-			//TODO: Need to decide whether to contains check for key
+			//TODO: Need to decide whether to check for contains key
 			fieldFSTMap.put(field, new HashMap<String, Map<Character,IndexState>>());
 		}
 		

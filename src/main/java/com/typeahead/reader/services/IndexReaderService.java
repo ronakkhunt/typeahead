@@ -7,7 +7,13 @@ import java.util.HashMap;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.typeahead.index.Index;
+/**
+ * Service layer to de-couple low-level Serialization functionality for reading {@link Index} related data to disk.
+ * As of now, this is using jackson for serialization
+ * @author ronakkhunt
+ *
+ */
 public class IndexReaderService {
 	
 	ObjectMapper mapper;

@@ -2,7 +2,11 @@ package com.typeahead.index;
 
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * Document class to hold data of any object into key-value manner.
+ * @author ronakkhunt
+ *
+ */
 public class Document {
 	
 	Map<String, String> entity;
@@ -34,7 +38,7 @@ public class Document {
 	public Map<String, String> getEntity() {
 		return entity;
 	}
-
+	
 	public void setEntity(Map<String, String> entity) {
 		this.entity = entity;
 	}

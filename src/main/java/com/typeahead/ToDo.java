@@ -12,6 +12,10 @@ import com.typeahead.writer.IndexWriter;
 public class ToDo {
 	
 	/**
+	 * 4) Integrate travis-ci for CI.
+	 */
+	
+	/**
 	 * 3) Index Merging policy
 	 * 
 	 * When should we write the index onto disk?
