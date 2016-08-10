@@ -1,4 +1,4 @@
-package com.typeahead.test;
+package com.typeahead.dummy;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

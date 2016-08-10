@@ -12,6 +12,12 @@ import com.typeahead.writer.IndexWriter;
 public class ToDo {
 	
 	/**
+	 * 5) Need to write unit test cases.
+	 * 
+	 * refer: http://tutorials.jenkov.com/java-unit-testing/asserts.html
+	 */
+	
+	/**
 	 * 4) Integrate travis-ci for CI.
 	 */
 	
