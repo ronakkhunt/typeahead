@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ClassUtil;
+import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.index.Document;
 import com.typeahead.index.Index;
 import com.typeahead.reader.services.IndexReaderService;
@@ -22,25 +23,46 @@ import com.typeahead.writer.IndexWriterUtil;
 public class IndexReader {
 	
 	IndexReaderService readerService;
-	
 	public IndexReader() {
 		readerService = new IndexReaderService();
+		
 	}
 	
-	public Index createIndex(String indexName) {
-		return new Index(indexName);
+	/**
+	 * Create new {@link Index}. 
+	 * @param indexName
+	 * @return
+	 * @throws IndexAlreadyExistException
+	 */
+	public Index createIndex(String indexName) throws IndexAlreadyExistException {
+		Index index = new Index(indexName);;
+		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
+		try {
+			writerUtil.createIndexFiles();
+		} catch (IOException e) {
+			//TODO: This IOException needs to be handled explicitly
+		}
+		return index;
 	}
 	
+	/**
+	 * Opens the existing {@link Index}
+	 * @param indexName
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public Index openIndex(String indexName) {
 		
-		//TODO: this should throw "IndexDoesNotExist" Exception
-		
 		Index index = new Index(indexName);
+		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
 		
-		File indexDataMap = IndexWriterUtil.getDataMapFile(index);
-		File fieldFSTMap = IndexWriterUtil.getFieldFSTMapFile(index);
-		File mapping = IndexWriterUtil.getMappingFile(index);
+		if(!writerUtil.doesIndexExistance()) {
+			//TODO: this should throw "IndexDoesNotExist" Exception
+		}	
+		
+		File indexDataMap = writerUtil.getDataMapFile();
+		File fieldFSTMap = writerUtil.getFieldFSTMapFile();
+		File mapping = writerUtil.getMappingFile();
 		
 		index.setDataMap(readerService.read(indexDataMap, HashMap.class));
 		index.setFieldFSTMap(readerService.read(fieldFSTMap, HashMap.class));
@@ -49,6 +71,11 @@ public class IndexReader {
 		return index;
 	}
 	
+	/**
+	 * Created the {@link Index}, if it does not exist, otherwise opens the Existing {@link Index}
+	 * @param indexName
+	 * @return
+	 */
 	public Index createOrOpenIndex(String indexName) {
 		return null;
 	}

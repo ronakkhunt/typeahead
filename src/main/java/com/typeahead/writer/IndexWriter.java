@@ -18,9 +18,9 @@ import com.typeahead.writer.services.IndexWriterService;
  */
 public class IndexWriter {
 	
-	IndexWriterService writerServices;
+	IndexWriterService writerService;
 	public IndexWriter(){
-		writerServices = new IndexWriterService();
+		writerService = new IndexWriterService();
 	}
 	
 	public void writeIndex(Index index) {
@@ -29,9 +29,9 @@ public class IndexWriter {
 		File fieldFSTMap = IndexWriterUtil.getFieldFSTMapFile(index);
 		File mapping = IndexWriterUtil.getMappingFile(index);
 		
-		writerServices.write(indexDataMap, index.getDataMap());
-		writerServices.write(fieldFSTMap, index.getFieldFSTMap());
-		writerServices.write(mapping, index.getMapping());
+		writerService.write(indexDataMap, index.getDataMap());
+		writerService.write(fieldFSTMap, index.getFieldFSTMap());
+		writerService.write(mapping, index.getMapping());
 		
 	}
 }
