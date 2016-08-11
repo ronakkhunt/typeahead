@@ -18,9 +18,9 @@ import com.typeahead.tokens.util.TokenUtils;
 public class IndexAddService {
 	
 	public void indexDocument(Index index, Document document, String output) {
-		List<String> filedToBeIndexed = index._getMappedField();
+		List<String> fieldToBeIndexed = index._getMappedField();
 		
-		for(String field: filedToBeIndexed){
+		for(String field: fieldToBeIndexed){
 			Map<String, Map<Character,IndexState>> fieldFSTMap = index.getFieldFSTMap(field);
 			
 			String dataToIndex = document.get(field);
@@ -30,7 +30,10 @@ public class IndexAddService {
 		}
 	}
 	
-	private void indexField(Index index, Map<String, Map<Character,IndexState>> fieldFSTMap, String data, String output) {
+	private void indexField(Index index,
+			Map<String, Map<Character,IndexState>> fieldFSTMap,
+			String data, String output) {
+		
 		String []data_tokens = TokenUtils.getTokens(data);
 		
 		for(String token: data_tokens){
@@ -41,6 +44,7 @@ public class IndexAddService {
 	}
 	
 	private void indexToken(Index index, Map<String, Map<Character,IndexState>> fieldFSTMap, String token, String output) {
+		
 		int l = token.length();
 		String state = index.getRootString() + token;
 		

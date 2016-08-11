@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.typeahead.index.services.IndexAddService;
+import com.typeahead.index.services.IndexDeleteService;
 
 /**
  * This class will be used to reference any index and store metadata about the index.
@@ -13,8 +14,6 @@ import com.typeahead.index.services.IndexAddService;
  *
  */
 public class Index {
-	
-	IndexAddService indexAddService;
 	
 	String name;
 	
@@ -45,7 +44,7 @@ public class Index {
 	Map<String, String> mapping;
 	
 	public Index(String name){
-		indexAddService = new IndexAddService();
+		
 		fieldFSTMap = new HashMap<String, Map<String,Map<Character,IndexState>>>();
 		
 		dataMap = new HashMap<String, Document>();
@@ -59,6 +58,8 @@ public class Index {
 	 * @param document
 	 */
 	public void add(Document document) {
+		
+		IndexAddService indexAddService = new IndexAddService();
 		String id = document.getId();
 		if(!dataMap.containsKey(id)){
 			//put data into data map
@@ -77,8 +78,14 @@ public class Index {
 	 * @param documentId
 	 */
 	public void delete(String documentId) {
+		IndexDeleteService indexDeleteService = new IndexDeleteService();
+		
 		//deleting data from data map
-		dataMap.remove(documentId);
+		Document document = dataMap.remove(documentId);
+		
+		if( document != null) {
+			indexDeleteService.deleteDocument(this, document, documentId);
+		}
 	}
 	
 	/**

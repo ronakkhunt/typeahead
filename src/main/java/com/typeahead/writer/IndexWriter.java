@@ -24,10 +24,11 @@ public class IndexWriter {
 	}
 	
 	public void writeIndex(Index index) {
+		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
 		
-		File indexDataMap = IndexWriterUtil.getDataMapFile(index);
-		File fieldFSTMap = IndexWriterUtil.getFieldFSTMapFile(index);
-		File mapping = IndexWriterUtil.getMappingFile(index);
+		File indexDataMap = writerUtil.getDataMapFile();
+		File fieldFSTMap = writerUtil.getFieldFSTMapFile();
+		File mapping = writerUtil.getMappingFile();
 		
 		writerService.write(indexDataMap, index.getDataMap());
 		writerService.write(fieldFSTMap, index.getFieldFSTMap());
