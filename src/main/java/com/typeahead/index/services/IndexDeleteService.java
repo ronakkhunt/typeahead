@@ -56,8 +56,8 @@ public class IndexDeleteService {
 			String st = state.substring(0, j);
 			
 			if(fieldFSTMap.containsKey(st)) {
-				if(fieldFSTMap.get(st).get(ch).output.contains(output)) {
-					fieldFSTMap.get(st).get(ch).output.remove(output);
+				if(fieldFSTMap.get(st).get(ch).getOutput().contains(output)) {
+					fieldFSTMap.get(st).get(ch).getOutput().remove(output);
 				}
 			}
 			

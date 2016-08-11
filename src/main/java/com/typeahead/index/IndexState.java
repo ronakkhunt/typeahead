@@ -9,9 +9,10 @@ import java.util.Set;
  *
  */
 public class IndexState {
-	public Set<String> output;
-	String nextState;
+	Set<String> output;
 	
+	String nextState;
+
 	public IndexState(){
 		output = new HashSet<String>();
 	}
@@ -23,5 +24,13 @@ public class IndexState {
 	@Override
 	public String toString(){
 		return "[nextState="+nextState+" <-->set="+ Arrays.toString(output.toArray())  +"]";
+	}
+	
+	public Set<String> getOutput() {
+		return output;
+	}
+	
+	public String getNextState() {
+		return nextState;
 	}
 }

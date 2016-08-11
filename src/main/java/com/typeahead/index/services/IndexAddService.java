@@ -66,7 +66,7 @@ public class IndexAddService {
 				Map<Character, IndexState> valueMap = fieldFSTMap.get(st);
 				
 				if(valueMap.containsKey(ch)){
-					valueMap.get(ch).output.add(output);
+					valueMap.get(ch).getOutput().add(output);
 				}else{
 					Set<String> idSet = new HashSet<String>();
 					idSet.add(output);
