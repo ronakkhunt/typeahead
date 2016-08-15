@@ -7,6 +7,8 @@ import java.util.Map;
 
 import com.typeahead.index.services.IndexAddService;
 import com.typeahead.index.services.IndexDeleteService;
+import com.typeahead.index.services.IndexSearchService;
+import com.typeahead.merge.MergePolicy;
 
 /**
  * This class will be used to reference any index and store metadata about the index.
@@ -16,6 +18,16 @@ import com.typeahead.index.services.IndexDeleteService;
 public class Index {
 	
 	String name;
+	
+	/**
+	 * 
+	 */
+	MergePolicy mergePolicy;
+	
+	/**
+	 * Map to store metadata about the files stored on the Disk
+	 */
+	Map<String, Object> metadata;
 	
 	/**
 	 * Base Path to store all the index data.
@@ -49,6 +61,14 @@ public class Index {
 		
 		dataMap = new HashMap<String, Document>();
 		mapping = new HashMap<String, String>();
+		
+		metadata = new HashMap<String, Object>();
+		metadata.put("maxDocCount", 1000);
+		metadata.put("mergeFactor", 10);
+		metadata.put("version", 1);
+		
+		mergePolicy = new MergePolicy(this);
+		
 		this.name = name;
 		dataDirectory = "/usr/local/typeahead/";
 	}
