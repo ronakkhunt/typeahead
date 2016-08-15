@@ -93,12 +93,9 @@ public class Index {
 	 * @param queryString
 	 * @return
 	 */
-	public String search(String queryString) {
-		//as of now
-		//this method will return ids/outputs from the fst and then,
-		
-		//for each ids/output, it will return data form dataMap
-		return null;
+	public List<Document> search(String field, String queryString) {
+		IndexSearchService searchService = new IndexSearchService();
+		return searchService.searchDocuments(this, field, queryString);
 	}
 	
 	public List<String> _getMappedField() {
@@ -117,6 +114,10 @@ public class Index {
 		return this.fieldFSTMap.get(field);
 	}
 	
+	public void recoverMapping(Map<String, String> mapping) {
+		this.mapping = mapping;
+	}
+	
 	/**
 	 * This method return the string, which is used as first level key in FST maps of each field.
 	 * @return
@@ -124,6 +125,11 @@ public class Index {
 	public String getRootString() {
 		return "|";
 	}
+	
+	
+	/**********************************************************
+	 **************    GETTERS AND SETTERS    *****************
+	 **********************************************************/
 
 	public String getName() {
 		return name;
@@ -153,9 +159,7 @@ public class Index {
 	public Map<String, String> getMapping() {
 		return mapping;
 	}
-	public void recoverMapping(Map<String, String> mapping) {
-		this.mapping = mapping;
-	}
+	
 	public void setMapping(Map<String, String> mapping) {
 		this.mapping = mapping;
 		
@@ -173,6 +177,19 @@ public class Index {
 	public void setDataDirectory(String dataDirectory) {
 		this.dataDirectory = dataDirectory;
 	}
+
+	public Map<String, Object> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, Object> metadata) {
+		this.metadata = metadata;
+	}
+
+	public MergePolicy getMergePolicy() {
+		return mergePolicy;
+	}
+	
 	
 	
 }
