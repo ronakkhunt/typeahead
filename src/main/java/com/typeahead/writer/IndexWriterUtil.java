@@ -1,13 +1,7 @@
 package com.typeahead.writer;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +69,7 @@ public class IndexWriterUtil {
 		filesList.add("/dataMap.map");
 		filesList.add("/fieldFSTMap_1.map");
 		filesList.add("/mapping.map");
+		filesList.add("/metadata.metadata");
 		
 		for(String fileName: filesList){
 			File f = new File(rootPath+fileName);
@@ -99,7 +94,13 @@ public class IndexWriterUtil {
 	 * @return
 	 */
 	public File getDataMapFile() {
-		return getFile(index.getDataDirectory()+index.getName(), "/dataMap.map");
+		int version = (Integer)index.getMetadata().get("version");
+		return getDataMapFile(version);
+	}
+	
+	public File getDataMapFile(int version) {
+		String fileName = "/dataMap_" + version + ".map";
+		return getFile(index.getDataDirectory()+index.getName(), fileName);
 	}
 	
 	/**
@@ -108,7 +109,8 @@ public class IndexWriterUtil {
 	 * @return
 	 */
 	public File getFieldFSTMapFile() {
-		return getFile(index.getDataDirectory()+index.getName(), "/fieldFSTMap.map");
+		String fileName = "/fieldFSTMap.map";
+		return getFile(index.getDataDirectory()+index.getName(), fileName);
 	}
 	
 	/**
@@ -118,6 +120,10 @@ public class IndexWriterUtil {
 	 */
 	public File getMappingFile() {
 		return getFile(index.getDataDirectory()+index.getName(), "/mapping.map");
+	}
+
+	public File getMetadataFile() {
+		return getFile(index.getDataDirectory()+index.getName(), "/metadata.metadata");
 	}
 	
 }

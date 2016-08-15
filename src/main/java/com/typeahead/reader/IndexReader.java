@@ -63,11 +63,12 @@ public class IndexReader {
 		File indexDataMap = writerUtil.getDataMapFile();
 		File fieldFSTMap = writerUtil.getFieldFSTMapFile();
 		File mapping = writerUtil.getMappingFile();
+		File metadata = writerUtil.getMetadataFile();
 		
 		index.setDataMap(readerService.read(indexDataMap, HashMap.class));
 		index.setFieldFSTMap(readerService.read(fieldFSTMap, HashMap.class));
 		index.recoverMapping(readerService.read(mapping, HashMap.class));
-
+		index.setMetadata(readerService.read(metadata, HashMap.class));
 		return index;
 	}
 	

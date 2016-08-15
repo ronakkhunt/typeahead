@@ -87,7 +87,7 @@ public class Index {
 			
 			//index data into fst
 			indexAddService.indexDocument(this, document, id);
-			
+			mergePolicy.ensurePolicy();
 		}else{
 			//TODO: throw a "DocumentAlreadyExist" exception
 		}

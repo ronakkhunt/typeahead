@@ -12,6 +12,14 @@ import com.typeahead.writer.IndexWriter;
 public class ToDo {
 	
 	/**
+	 * 6) Configuration to upload this as artifact in maven repository.
+	 * REFER:
+	 * 	1) http://www.vineetmanohar.com/2009/12/publishing-to-maven-central-repo-in-5-steps/
+	 * 	2) https://maven.apache.org/guides/mini/guide-central-repository-upload.html
+	 *  
+	 */
+	
+	/**
 	 * 5) Need to write unit test cases.
 	 * 
 	 * refer: http://tutorials.jenkov.com/java-unit-testing/asserts.html
