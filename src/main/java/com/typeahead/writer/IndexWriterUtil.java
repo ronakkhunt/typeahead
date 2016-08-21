@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.typeahead.exceptions.IndexAlreadyExistException;
+import com.typeahead.exceptions.IndexDoesNotExist;
 import com.typeahead.index.Index;
 /**
  * Util class for {@Link Index} to create/read/maintain files related to index.
@@ -26,10 +27,10 @@ public class IndexWriterUtil {
 	 * @return
 	 */
 	public boolean doesIndexExistance() {
-		String rootPath = index.getDataDirectory() + index.getName();
+		String indexPath = index.getDataDirectory() + index.getName();
 		
-		File rootDirectory = new File(rootPath);
-		if(rootDirectory.exists() && rootDirectory.isDirectory() ) { 
+		File indexDirectory = new File(indexPath);
+		if(indexDirectory.exists() && indexDirectory.isDirectory() ) { 
 			return true;
 		}
 		return false;
@@ -75,6 +76,22 @@ public class IndexWriterUtil {
 			File f = new File(rootPath+fileName);
 			f.createNewFile();
 		}
+	}
+	
+	/**
+	 * Helper methos to clean all the {@link Index} related file.
+	 * @throws IndexDoesNotExist
+	 */
+	public void deleteIndexFiles() throws IndexDoesNotExist {
+		String indexPath = index.getDataDirectory() + index.getName();
+		
+		if(!doesIndexExistance()) {
+			throw new IndexDoesNotExist("Index: "+index.getName()+" does not exist.");
+		}
+		
+		File indexDirectory = new File(indexPath);
+		_deleteDirectoryRecursively(indexDirectory);
+		
 	}
 	
 	/**
@@ -126,4 +143,21 @@ public class IndexWriterUtil {
 		return getFile(index.getDataDirectory()+index.getName(), "/metadata.metadata");
 	}
 	
+	/**
+	 * Recursive function to delete Directory having content.
+	 * @param rootFile
+	 */
+	private void _deleteDirectoryRecursively(File rootFile) {
+		File []files = rootFile.listFiles();
+		if( files != null) {
+			for(File file: files) {
+				if(file.isFile()) {
+					file.delete();
+				}else if(file.isDirectory()) {
+					_deleteDirectoryRecursively(file);
+				}
+			}
+		}
+		rootFile.delete();
+	}
 }

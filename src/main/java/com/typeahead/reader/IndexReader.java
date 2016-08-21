@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 import com.typeahead.exceptions.IndexAlreadyExistException;
+import com.typeahead.exceptions.IndexDoesNotExist;
 import com.typeahead.index.Document;
 import com.typeahead.index.Index;
 import com.typeahead.reader.services.IndexReaderService;
@@ -49,15 +50,16 @@ public class IndexReader {
 	 * Opens the existing {@link Index}
 	 * @param indexName
 	 * @return
+	 * @throws IndexDoesNotExist 
 	 */
 	@SuppressWarnings("unchecked")
-	public Index openIndex(String indexName) {
+	public Index openIndex(String indexName) throws IndexDoesNotExist {
 		
 		Index index = new Index(indexName);
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
 		
 		if(!writerUtil.doesIndexExistance()) {
-			//TODO: this should throw "IndexDoesNotExist" Exception
+			throw new IndexDoesNotExist("Index: "+indexName+" does not exist.");
 		}	
 		
 		File indexDataMap = writerUtil.getDataMapFile();
@@ -79,5 +81,18 @@ public class IndexReader {
 	 */
 	public Index createOrOpenIndex(String indexName) {
 		return null;
+	}
+	
+	/**
+	 * Delete {@link Index}
+	 * @param indexName
+	 * @throws IndexDoesNotExist 
+	 */
+	public void deleteIndex(String indexName) throws IndexDoesNotExist {
+		
+		Index index = new Index(indexName);
+		IndexWriterUtil writerUtil = new IndexWriterUtil(index );
+		
+		writerUtil.deleteIndexFiles();
 	}
 }

@@ -33,7 +33,6 @@ public class IndexSearchService {
 		List<String> result_ids = new ArrayList<String>();
 		result_ids.addAll(results_set);
 		return result_ids;
-		
 	}
 	
 	/**
@@ -76,18 +75,18 @@ public class IndexSearchService {
 	}
 	
 	private Set<String> searchToken(Index index, String field, String token) {
-		String word = "";
-		if(word.length() < 1){
+		
+		if(token.length() < 1){
 			return new HashSet<String>();
 		}
 		
 		Map<String, Map<Character, IndexState>> fst = index.getFieldFSTMap(field);
 		
-		int l = word.length();
-		String state = '|'+word;
+		int l = token.length();
+		String state = '|'+token;
 		String cur_st = null;
 		for(int i = 0; i < l; i++) {
-			char ch = word.charAt(i);
+			char ch = token.charAt(i);
 			cur_st = state.substring(0, i+1);
 			
 			if(!fst.containsKey(cur_st)){
@@ -100,8 +99,8 @@ public class IndexSearchService {
 			}
 		}
 		
-		if( fst.get(cur_st).containsKey(word.charAt(l-1)) ){
-			return fst.get(cur_st).get(word.charAt(l-1)).getOutput();
+		if( fst.get(cur_st).containsKey(token.charAt(l-1)) ){
+			return fst.get(cur_st).get(token.charAt(l-1)).getOutput();
 		}else{
 			return new HashSet<String>(); 
 		}

@@ -70,9 +70,9 @@ public class Index {
 		mergePolicy = new MergePolicy(this);
 		
 		this.name = name;
-		dataDirectory = "/usr/local/typeahead/";
+		dataDirectory = _getDataDirectoryPath();
 	}
-	
+
 	/**
 	 * Method to add {@link Document}, which contains data, into Index to make it Search-able.
 	 * @param document
@@ -146,6 +146,10 @@ public class Index {
 		return "|";
 	}
 	
+	private String _getDataDirectoryPath() {
+		dataDirectory = "./";
+		return dataDirectory;
+	}
 	
 	/**********************************************************
 	 **************    GETTERS AND SETTERS    *****************
