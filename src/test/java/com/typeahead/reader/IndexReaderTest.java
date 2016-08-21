@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.typeahead.exceptions.IndexAlreadyExistException;
-import com.typeahead.exceptions.IndexDoesNotExist;
+import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Index;
 import com.typeahead.writer.IndexWriterUtil;
 
@@ -17,7 +17,7 @@ public class IndexReaderTest {
 	}
 	
 	@Test
-	public void createIndexTest() throws IndexDoesNotExist {
+	public void createIndexTest() throws IndexDoesNotExistException {
 		String indexName = "_create_test";
 		Index index = new Index(indexName);
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
@@ -43,7 +43,7 @@ public class IndexReaderTest {
 		//TEST 1: Exception test
 		try {
 			reader.deleteIndex("_dummy_index");
-		} catch (IndexDoesNotExist e) {
+		} catch (IndexDoesNotExistException e) {
 			Assert.assertTrue("Index: _dummy_index does not exist.".equals(e.getMessage()));
 		}
 				
@@ -57,7 +57,7 @@ public class IndexReaderTest {
 		try {
 			reader.deleteIndex(indexName);
 			Assert.assertFalse(writerUtil.doesIndexExistance());
-		} catch (IndexDoesNotExist e) {}
+		} catch (IndexDoesNotExistException e) {}
 		
 	}
 }

@@ -10,26 +10,26 @@ import com.typeahead.writer.IndexWriter;
  *
  */
 public class MergePolicy {
-	private Integer mergeFactor;
-	Integer maxDocCount;
+	
 	Index index;
 	IndexWriter writer;
+	
 	public MergePolicy(Index index) {
 		this.index = index;
 		writer = new IndexWriter();
-		this.mergeFactor = (Integer)index.getMetadata().get("mergeFactor");
-		this.maxDocCount = index.getDataMap().size();
 	}
 	
 	public void ensurePolicy() {
 		int docCount = index.getDataMap().size();
-		int newSegmentVesrion = docCount / mergeFactor;
+		int mergeFactor = getMergeFactor();
+		int newSegmentVesrion = docCount / mergeFactor ;
 		if(docCount % mergeFactor == 0) {
 			flushIndex(newSegmentVesrion);
 			ensure(docCount);
 		}
 	}
 	public void ensure(int docCount) {
+		int mergeFactor = getMergeFactor();
 		int newSegmentVesrion = docCount / mergeFactor;
 		index.getMetadata().put("version", newSegmentVesrion);
 		
@@ -41,13 +41,27 @@ public class MergePolicy {
 		}
 	}
 	
-	private void flushIndex(int newSegmentVersion) {
+	/**
+	 * TODO: this methods need to be moved to {@link IndexWriter}
+	 * Used before closing the index, to write remaining data onto files.
+	 * It will use last version + 1 to create last segment
+	 */
+	public void flushIndex() {
+		flushIndex(index.getVersion() + 1);
+	}
+	
+	/**
+	 * TODO: this methods need to be moved to {@link IndexWriter}
+	 * Flushed/Writes data onto disk, creating file with given version.
+	 * @param newSegmentVersion
+	 */
+	public void flushIndex(int newSegmentVersion) {
+		index.setVersion(newSegmentVersion);
 		IndexWriter writer = new IndexWriter();
 		writer.writeIndex(index);
 	}
 	
 	public Integer getMergeFactor() {
-		return mergeFactor;
+		return (Integer) index.getMetadata().get("mergeFactor");
 	}
-	
 }

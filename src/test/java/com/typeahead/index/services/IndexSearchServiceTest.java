@@ -10,10 +10,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.typeahead.exceptions.IndexAlreadyExistException;
-import com.typeahead.exceptions.IndexDoesNotExist;
+import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Document;
 import com.typeahead.index.Index;
 import com.typeahead.reader.IndexReader;
+import com.typeahead.util.TestUtil;
 import com.typeahead.writer.IndexWriterUtil;
 
 public class IndexSearchServiceTest {
@@ -31,7 +32,7 @@ public class IndexSearchServiceTest {
 		//making sure index does not exist.
 		try {
 			reader.deleteIndex(indexName);
-		} catch (IndexDoesNotExist e1) {}
+		} catch (IndexDoesNotExistException e1) {}
 		
 		try {
 			this.index = reader.createIndex(indexName);
@@ -39,7 +40,7 @@ public class IndexSearchServiceTest {
 		
 		try {
 			reader.deleteIndex(indexName);
-		} catch (IndexDoesNotExist e1) {}
+		} catch (IndexDoesNotExistException e1) {}
 		
 		//set mapping
 		Map<String, String> mapping = new HashMap<String, String>();
@@ -52,7 +53,7 @@ public class IndexSearchServiceTest {
 	public void searchTest() {
 		
 		//Index/Add Documents 
-		List<Document> testDocument = _getTestDocuments();
+		List<Document> testDocument = TestUtil.getTestDocuments();
 		for(Document doc: testDocument) {
 			index.add(doc);
 		}
@@ -74,41 +75,4 @@ public class IndexSearchServiceTest {
 		Assert.assertArrayEquals(expected_result_array, result_array);
 	}
 	
-	
-	private List<Document> _getTestDocuments()
-	{
-		List<Document> list = new ArrayList<Document>();
-		
-		Document u1 = new Document("u1");
-		u1.set("data", "Adam D’Angelo");
-		u1.set("type", "user");
-		u1.set("score", "1.0");
-		list.add(u1);
-		
-		Document u2 = new Document("u2");
-		u2.set("data", "Adam Black");
-		u2.set("type", "user");
-		u2.set("score", "1.0");
-		list.add(u2);
-		
-		Document t1 = new Document("t1");
-		t1.set("data", "Adam D’Angelo");
-		t1.set("type", "topic");
-		t1.set("score", "0.8");
-		list.add(t1);
-		
-		Document q1 = new Document("q1");
-		q1.set("data", "What does Adam D’Angelo do at Quora?");
-		q1.set("type", "question");
-		q1.set("score", "0.5");
-		list.add(q1);
-		
-		Document q2 = new Document("q2");
-		q2.set("data", "How did Adam D’Angelo learn programming?");
-		q2.set("type", "question");
-		q2.set("score", "0.5");
-		list.add(q2);
-		
-		return list;
-	}
 }

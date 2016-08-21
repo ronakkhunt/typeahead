@@ -16,7 +16,7 @@ import com.typeahead.tokens.util.TokenUtils;
 public class IndexDeleteService {
 	
 	public void deleteDocument(Index index, Document document, String output) {
-		List<String> fieldToBeIndexed = index._getMappedField();
+		List<String> fieldToBeIndexed = index.getMappedField();
 		
 		for(String field: fieldToBeIndexed){
 			Map<String, Map<Character,IndexState>> fieldFSTMap = index.getFieldFSTMap(field);

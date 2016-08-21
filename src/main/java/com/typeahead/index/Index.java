@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.typeahead.exceptions.DocumentAlreadyExistException;
 import com.typeahead.index.services.IndexAddService;
 import com.typeahead.index.services.IndexDeleteService;
 import com.typeahead.index.services.IndexSearchService;
@@ -81,15 +82,21 @@ public class Index {
 		
 		IndexAddService indexAddService = new IndexAddService();
 		String id = document.getId();
-		if(!dataMap.containsKey(id)){
-			//put data into data map
-			dataMap.put(id, document);
-			
-			//index data into fst
-			indexAddService.indexDocument(this, document, id);
-			mergePolicy.ensurePolicy();
-		}else{
-			//TODO: throw a "DocumentAlreadyExist" exception
+		try {
+			if(!dataMap.containsKey(id)) {
+				//put data into data map
+				dataMap.put(id, document);
+				
+				//index data into fst
+				indexAddService.indexDocument(this, document, id);
+				
+				mergePolicy.ensurePolicy();
+			}else{
+				throw new DocumentAlreadyExistException("Document with id: "+id+" already Exists");
+			}
+		}catch(DocumentAlreadyExistException e) {
+			//TODO: should LOG something here.
+			System.out.println("Document already exist");
 		}
 	}
 	
@@ -118,7 +125,11 @@ public class Index {
 		return searchService.searchDocuments(this, field, queryString);
 	}
 	
-	public List<String> _getMappedField() {
+	/**
+	 * Returns list for mapped field(s), specified in {@link Index#mapping}
+	 * @return
+	 */
+	public List<String> getMappedField() {
 		List<String> list = new ArrayList<String>();
 		list.addAll(mapping.keySet());
 		return list;
@@ -139,6 +150,14 @@ public class Index {
 	}
 	
 	/**
+	 * Set merge factor in {@link Index#metadata} using <b>mergeFactor</b> as key.
+	 * @param value
+	 */
+	public void setMergeFactor(int value) {
+		this.metadata.put("mergeFactor", value);
+	}
+	
+	/**
 	 * This method return the string, which is used as first level key in FST maps of each field.
 	 * @return
 	 */
@@ -151,10 +170,26 @@ public class Index {
 		return dataDirectory;
 	}
 	
-	/**********************************************************
-	 **************    GETTERS AND SETTERS    *****************
-	 **********************************************************/
-
+	/**********************************************************************************
+	 ****************************    GETTERS AND SETTERS    ***************************
+	 **********************************************************************************/
+	
+	/**
+	 * Set version in {@link Index#metadata} using <b>version</b> as key.
+	 * @param newSegmentVersion
+	 */
+	public void setVersion(int newSegmentVersion) {
+		this.metadata.put("version", newSegmentVersion);
+	}
+	
+	/**
+	 * Returns the current segment version from {@link Index#metadata}, using <b>version</b> as key.
+	 * @return
+	 */
+	public int getVersion() {
+		return (Integer)this.metadata.get("version");
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -187,7 +222,7 @@ public class Index {
 	public void setMapping(Map<String, String> mapping) {
 		this.mapping = mapping;
 		
-		for(String field: _getMappedField()){
+		for(String field: getMappedField()){
 			//TODO: Need to decide whether to check for contains key
 			fieldFSTMap.put(field, new HashMap<String, Map<Character,IndexState>>());
 		}
@@ -213,7 +248,5 @@ public class Index {
 	public MergePolicy getMergePolicy() {
 		return mergePolicy;
 	}
-	
-	
-	
+
 }

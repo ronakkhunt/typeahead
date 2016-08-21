@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.typeahead.exceptions.IndexAlreadyExistException;
-import com.typeahead.exceptions.IndexDoesNotExist;
+import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Index;
+import com.typeahead.utils.FileUtil;
 /**
  * Util class for {@Link Index} to create/read/maintain files related to index.
  * @author ronakkhunt
@@ -68,7 +69,7 @@ public class IndexWriterUtil {
 	private static void _createIndexFiles(String rootPath) throws IOException {
 		List<String> filesList = new ArrayList<String>();
 		filesList.add("/dataMap.map");
-		filesList.add("/fieldFSTMap_1.map");
+		filesList.add("/fieldFSTMap.map");
 		filesList.add("/mapping.map");
 		filesList.add("/metadata.metadata");
 		
@@ -80,13 +81,13 @@ public class IndexWriterUtil {
 	
 	/**
 	 * Helper methos to clean all the {@link Index} related file.
-	 * @throws IndexDoesNotExist
+	 * @throws IndexDoesNotExistException
 	 */
-	public void deleteIndexFiles() throws IndexDoesNotExist {
+	public void deleteIndexFiles() throws IndexDoesNotExistException {
 		String indexPath = index.getDataDirectory() + index.getName();
 		
 		if(!doesIndexExistance()) {
-			throw new IndexDoesNotExist("Index: "+index.getName()+" does not exist.");
+			throw new IndexDoesNotExistException("Index: "+index.getName()+" does not exist.");
 		}
 		
 		File indexDirectory = new File(indexPath);
@@ -143,21 +144,7 @@ public class IndexWriterUtil {
 		return getFile(index.getDataDirectory()+index.getName(), "/metadata.metadata");
 	}
 	
-	/**
-	 * Recursive function to delete Directory having content.
-	 * @param rootFile
-	 */
 	private void _deleteDirectoryRecursively(File rootFile) {
-		File []files = rootFile.listFiles();
-		if( files != null) {
-			for(File file: files) {
-				if(file.isFile()) {
-					file.delete();
-				}else if(file.isDirectory()) {
-					_deleteDirectoryRecursively(file);
-				}
-			}
-		}
-		rootFile.delete();
+		FileUtil.deleteDirectoryRecursively(rootFile);
 	}
 }
