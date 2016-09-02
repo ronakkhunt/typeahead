@@ -1,6 +1,7 @@
 package com.typeahead.utils;
 
 import java.io.File;
+import java.io.FilenameFilter;
 /**
  * Helper class for Files and Directories 
  * @author ronakkhunt
@@ -24,5 +25,20 @@ public class FileUtil {
 			}
 		}
 		rootFile.delete();
+	}
+	
+	/**
+	 * Return an array of {@link File} objects ending with given extension
+	 * @param extension
+	 * @return
+	 */
+	public static File[] getAllFilesEndingWith(String path, final String extension) {
+		File rootDirectory = new File(path);
+		return rootDirectory.listFiles(new FilenameFilter() {
+			
+			public boolean accept(File dir, String name) {
+				return name.toLowerCase().endsWith(extension);
+			}
+		});
 	}
 }

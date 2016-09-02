@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.typeahead.constants.FileExtension;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Index;
@@ -66,15 +67,17 @@ public class IndexWriterUtil {
 	 * @param rootPath
 	 * @throws IOException
 	 */
-	private static void _createIndexFiles(String rootPath) throws IOException {
-		List<String> filesList = new ArrayList<String>();
-		filesList.add("/dataMap.map");
-		filesList.add("/fieldFSTMap.map");
-		filesList.add("/mapping.map");
-		filesList.add("/metadata.metadata");
+	private void _createIndexFiles(String rootPath) throws IOException {
 		
-		for(String fileName: filesList){
-			File f = new File(rootPath+fileName);
+		//TODO: Not sure about whether to create file here. As of now ObjectMapper of jackson
+		//      taking care of exitance of file.
+		List<File> filesList = new ArrayList<File>();
+		filesList.add(getDataMapFile());
+		filesList.add(getFieldFSTMapFile());
+		filesList.add(getMappingFile());
+		filesList.add(getMetadataFile());
+		
+		for(File f: filesList){
 			f.createNewFile();
 		}
 	}
@@ -102,7 +105,7 @@ public class IndexWriterUtil {
 	 * @return
 	 */
 	private File getFile(String prefix, String name){
-		//TODO: Even ther should be some check here, what if this file does not exist?
+		//TODO: there should be some check here, what if this file does not exist?
 		return new File(prefix+name);
 	}
 	
@@ -117,8 +120,8 @@ public class IndexWriterUtil {
 	}
 	
 	public File getDataMapFile(int version) {
-		String fileName = "/dataMap_" + version + ".map";
-		return getFile(index.getDataDirectory()+index.getName(), fileName);
+		String fileName = "/dataMap_" + version + FileExtension.DATA_MAP.getExtension();
+		return getFile(index.getIndexDirectoryPath(), fileName);
 	}
 	
 	/**
@@ -127,8 +130,8 @@ public class IndexWriterUtil {
 	 * @return
 	 */
 	public File getFieldFSTMapFile() {
-		String fileName = "/fieldFSTMap.map";
-		return getFile(index.getDataDirectory()+index.getName(), fileName);
+		String fileName = "/fieldFSTMap"+FileExtension.FIELD_FST_MAP.getExtension();
+		return getFile(index.getIndexDirectoryPath(), fileName);
 	}
 	
 	/**
@@ -137,11 +140,13 @@ public class IndexWriterUtil {
 	 * @return
 	 */
 	public File getMappingFile() {
-		return getFile(index.getDataDirectory()+index.getName(), "/mapping.map");
+		String fileName = "/mapping"+FileExtension.MAPPING.getExtension();
+		return getFile(index.getIndexDirectoryPath(), fileName);
 	}
 
 	public File getMetadataFile() {
-		return getFile(index.getDataDirectory()+index.getName(), "/metadata.metadata");
+		String fileName = "/metadata"+FileExtension.METADATA.getExtension();
+		return getFile(index.getIndexDirectoryPath(), fileName);
 	}
 	
 	private void _deleteDirectoryRecursively(File rootFile) {

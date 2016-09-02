@@ -175,6 +175,14 @@ public class Index {
 	 **********************************************************************************/
 	
 	/**
+	 * Return base path for {@link Index} directory.
+	 * @return
+	 */
+	public String getIndexDirectoryPath() {
+		return this.getDataDirectory() + this.getName();
+	}
+	
+	/**
 	 * Set version in {@link Index#metadata} using <b>version</b> as key.
 	 * @param newSegmentVersion
 	 */
