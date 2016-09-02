@@ -37,15 +37,14 @@ public class IndexReader {
 	 * @param indexName
 	 * @return
 	 * @throws IndexAlreadyExistException
+	 * @throws IOException 
 	 */
-	public Index createIndex(String indexName) throws IndexAlreadyExistException {
+	public Index createIndex(String indexName) throws IndexAlreadyExistException, IOException {
 		Index index = new Index(indexName);;
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
-		try {
-			writerUtil.createIndexFiles();
-		} catch (IOException e) {
-			//TODO: This IOException needs to be handled explicitly
-		}
+		
+		writerUtil.createIndexFiles();
+		
 		return index;
 	}
 	

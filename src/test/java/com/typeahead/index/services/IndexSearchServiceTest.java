@@ -1,5 +1,6 @@
 package com.typeahead.index.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class IndexSearchServiceTest {
 	IndexSearchService searchService;
 	Index index;
 	
-	public IndexSearchServiceTest() {
+	public IndexSearchServiceTest() throws IOException {
 		String indexName = "_test_search";
 		reader = new IndexReader();
 		searchService = new IndexSearchService();

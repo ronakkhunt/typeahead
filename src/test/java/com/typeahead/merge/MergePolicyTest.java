@@ -1,5 +1,7 @@
 package com.typeahead.merge;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,9 +18,10 @@ public class MergePolicyTest {
 	 * TODO: This test case is not proper and needs to be completed when implementation
 	 * of {@link MergePolicy} is completed.
 	 * @throws IndexAlreadyExistException
+	 * @throws IOException 
 	 */
 	@Test
-	public void ensurePolicyTest() throws IndexAlreadyExistException {
+	public void ensurePolicyTest() throws IndexAlreadyExistException, IOException {
 		String indexName = "_merge_test";
 		IndexReader reader = new IndexReader();
 		

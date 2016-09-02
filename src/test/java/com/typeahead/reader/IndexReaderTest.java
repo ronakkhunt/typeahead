@@ -1,5 +1,7 @@
 package com.typeahead.reader;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,9 +26,10 @@ public class IndexReaderTest {
 	 * which then can be extended to test other fields like {@link Index#fieldFSTMap}
 	 * @throws IndexAlreadyExistException
 	 * @throws IndexDoesNotExistException
+	 * @throws IOException 
 	 */
 	@Test
-	public void readingSegmentTest() throws IndexAlreadyExistException, IndexDoesNotExistException {
+	public void readingSegmentTest() throws IndexAlreadyExistException, IndexDoesNotExistException, IOException {
 		String indexName = "_reader_segment_test";
 		IndexReader reader = new IndexReader();
 		
@@ -60,7 +63,7 @@ public class IndexReaderTest {
 	
 	
 	@Test
-	public void createIndexTest() throws IndexDoesNotExistException {
+	public void createIndexTest() throws IndexDoesNotExistException, IOException {
 		String indexName = "_create_test";
 		Index index = new Index(indexName);
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
@@ -77,7 +80,7 @@ public class IndexReaderTest {
 	}
 	
 	@Test
-	public void deleteIndexTest() {
+	public void deleteIndexTest() throws IOException {
 		
 		String indexName = "_del_test";
 		Index index = new Index(indexName);
