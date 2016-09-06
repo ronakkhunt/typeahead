@@ -86,9 +86,34 @@ public class IndexReader {
 	 * Created the {@link Index}, if it does not exist, otherwise opens the Existing {@link Index}
 	 * @param indexName
 	 * @return
+	 * @throws IOException 
+	 * @throws  
 	 */
-	public Index createOrOpenIndex(String indexName) {
-		return null;
+	public Index createOrOpenIndex(String indexName) throws  IOException {
+
+		//TODO: This method use existing openIndex and createIndex API.
+		// Need to verify integrity of this code.
+		
+		Index index = new Index(indexName);
+		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
+		
+		if(!writerUtil.doesIndexExistance()) {
+			try {
+				index = createIndex(indexName);
+			}catch(IndexAlreadyExistException ex){
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
+			}
+			
+		}else {
+			try {
+				index = openIndex(indexName);
+			} catch (IndexDoesNotExistException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return index;
 	}
 	
 	/**
