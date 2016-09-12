@@ -10,44 +10,46 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.typeahead.config.IndexConfig;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Document;
-import com.typeahead.index.Index;
 import com.typeahead.reader.IndexReader;
 import com.typeahead.util.TestUtil;
+import com.typeahead.writer.IndexWriter;
 import com.typeahead.writer.IndexWriterUtil;
 
 public class IndexSearchServiceTest {
 	
 	IndexWriterUtil writerUtil;
+	IndexWriter writer;
 	IndexReader reader;
 	IndexSearchService searchService;
-	Index index;
+	IndexConfig config;
 	
 	public IndexSearchServiceTest() throws IOException {
 		String indexName = "_test_search";
-		reader = new IndexReader();
+		
+		config = new IndexConfig(indexName);
+		
+		reader = new IndexReader(config);
+		writer = new IndexWriter(config);
+		
 		searchService = new IndexSearchService();
 		
 		//making sure index does not exist.
 		try {
-			reader.deleteIndex(indexName);
+			reader.deleteIndex();
 		} catch (IndexDoesNotExistException e1) {}
 		
 		try {
-			this.index = reader.createIndex(indexName);
+			reader.createIndex();
 		} catch (IndexAlreadyExistException e) {}
-		
-		try {
-			reader.deleteIndex(indexName);
-		} catch (IndexDoesNotExistException e1) {}
 		
 		//set mapping
 		Map<String, String> mapping = new HashMap<String, String>();
 		mapping.put("data", "String");
-		index.setMapping(mapping);
-
+		reader.setMapping(mapping);
 	}
 	
 	@Test
@@ -56,10 +58,10 @@ public class IndexSearchServiceTest {
 		//Index/Add Documents 
 		List<Document> testDocument = TestUtil.getTestDocuments();
 		for(Document doc: testDocument) {
-			index.add(doc);
+			writer.addDocument(doc);
 		}
 		
-		List<String> result = searchService.searchIDs(index, "data", "Adam");
+		List<String> result = searchService.searchIDs(config.getIndex(), "data", "Adam");
 		List<String> expected_result = new ArrayList<String>();
 		expected_result.add("u2");
 		expected_result.add("u1");
@@ -74,6 +76,10 @@ public class IndexSearchServiceTest {
 		Arrays.sort(expected_result_array);
 		
 		Assert.assertArrayEquals(expected_result_array, result_array);
+		
+		try {
+			reader.deleteIndex();
+		} catch (IndexDoesNotExistException e1) {}
 	}
 	
 }

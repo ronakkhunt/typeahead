@@ -2,14 +2,10 @@ package com.typeahead.reader;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.cert.Extension;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.ClassUtil;
+import com.typeahead.config.IndexConfig;
 import com.typeahead.constants.FileExtension;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
@@ -27,9 +23,10 @@ import com.typeahead.writer.IndexWriterUtil;
 public class IndexReader {
 	
 	IndexReaderService readerService;
-	public IndexReader() {
+	Index index;
+	public IndexReader(IndexConfig config) {
 		readerService = new IndexReaderService();
-		
+		index = config.getIndex();
 	}
 	
 	/**
@@ -39,13 +36,10 @@ public class IndexReader {
 	 * @throws IndexAlreadyExistException
 	 * @throws IOException 
 	 */
-	public Index createIndex(String indexName) throws IndexAlreadyExistException, IOException {
-		Index index = new Index(indexName);;
+	public IndexReader createIndex() throws IndexAlreadyExistException, IOException {
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
-		
 		writerUtil.createIndexFiles();
-		
-		return index;
+		return this;
 	}
 	
 	/**
@@ -55,13 +49,12 @@ public class IndexReader {
 	 * @throws IndexDoesNotExistException 
 	 */
 	@SuppressWarnings("unchecked")
-	public Index openIndex(String indexName) throws IndexDoesNotExistException {
+	public IndexReader openIndex() throws IndexDoesNotExistException {
 		
-		Index index = new Index(indexName);
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
 		
 		if(!writerUtil.doesIndexExistance()) {
-			throw new IndexDoesNotExistException("Index: "+indexName+" does not exist.");
+			throw new IndexDoesNotExistException("Index: "+index.getName()+" does not exist.");
 		}	
 		
 		//Reading metadata first.
@@ -79,7 +72,7 @@ public class IndexReader {
 		File mapping = writerUtil.getMappingFile();
 		index.recoverMapping(readerService.read(mapping, HashMap.class));
 		
-		return index;
+		return this;
 	}
 	
 	/**
@@ -89,17 +82,17 @@ public class IndexReader {
 	 * @throws IOException 
 	 * @throws  
 	 */
-	public Index createOrOpenIndex(String indexName) throws  IOException {
+	public IndexReader createOrOpenIndex() throws  IOException {
 
 		//TODO: This method use existing openIndex and createIndex API.
 		// Need to verify integrity of this code.
 		
-		Index index = new Index(indexName);
+		
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
 		
 		if(!writerUtil.doesIndexExistance()) {
 			try {
-				index = createIndex(indexName);
+				return createIndex();
 			}catch(IndexAlreadyExistException ex){
 				// TODO Auto-generated catch block
 				ex.printStackTrace();
@@ -107,13 +100,13 @@ public class IndexReader {
 			
 		}else {
 			try {
-				index = openIndex(indexName);
+				return openIndex();
 			} catch (IndexDoesNotExistException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return index;
+		return this;
 	}
 	
 	/**
@@ -121,12 +114,14 @@ public class IndexReader {
 	 * @param indexName
 	 * @throws IndexDoesNotExistException 
 	 */
-	public void deleteIndex(String indexName) throws IndexDoesNotExistException {
+	public void deleteIndex() throws IndexDoesNotExistException {
 		
-		Index index = new Index(indexName);
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index );
-		
 		writerUtil.deleteIndexFiles();
+	}
+	
+	public void setMapping(Map<String, String> mapping) {
+		index.setMapping(mapping);
 	}
 	
 	/**
@@ -146,5 +141,15 @@ public class IndexReader {
 			dataMap.putAll(readerService.read(f, HashMap.class));
 		}
 		index.setDataMap(dataMap);
+	}
+	
+	public void setMergeFactor(int value) {
+		index.setMergeFactor(value);
+	}
+
+	public void close() {
+		// TODO Need to implement this method
+		// Idea is this method should releases all the in-memory resources.
+		
 	}
 }

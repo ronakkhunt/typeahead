@@ -1,5 +1,6 @@
 package com.typeahead.merge;
 
+import com.typeahead.config.IndexConfig;
 import com.typeahead.index.Index;
 import com.typeahead.writer.IndexWriter;
 
@@ -14,9 +15,9 @@ public class MergePolicy {
 	Index index;
 	IndexWriter writer;
 	
-	public MergePolicy(Index index) {
-		this.index = index;
-		writer = new IndexWriter();
+	public MergePolicy(IndexWriter writer) {
+		this.index = writer.getIndexConfig().getIndex();
+		this.writer = writer;
 	}
 	
 	public void ensurePolicy() {
@@ -57,8 +58,7 @@ public class MergePolicy {
 	 */
 	public void flushIndex(int newSegmentVersion) {
 		index.setVersion(newSegmentVersion);
-		IndexWriter writer = new IndexWriter();
-		writer.writeIndex(index);
+		writer.writeIndex();
 	}
 	
 	public Integer getMergeFactor() {

@@ -21,11 +21,6 @@ public class Index {
 	String name;
 	
 	/**
-	 * 
-	 */
-	MergePolicy mergePolicy;
-	
-	/**
 	 * Map to store metadata about the files stored on the Disk
 	 */
 	Map<String, Object> metadata;
@@ -68,51 +63,8 @@ public class Index {
 		metadata.put("mergeFactor", 10);
 		metadata.put("version", 1);
 		
-		mergePolicy = new MergePolicy(this);
-		
 		this.name = name;
 		dataDirectory = _getDataDirectoryPath();
-	}
-
-	/**
-	 * Method to add {@link Document}, which contains data, into Index to make it Search-able.
-	 * @param document
-	 */
-	public void add(Document document) {
-		
-		IndexAddService indexAddService = new IndexAddService();
-		String id = document.getId();
-		try {
-			if(!dataMap.containsKey(id)) {
-				//put data into data map
-				dataMap.put(id, document);
-				
-				//index data into fst
-				indexAddService.indexDocument(this, document, id);
-				
-				mergePolicy.ensurePolicy();
-			}else{
-				throw new DocumentAlreadyExistException("Document with id: "+id+" already Exists");
-			}
-		}catch(DocumentAlreadyExistException e) {
-			//TODO: should LOG something here.
-			System.out.println("Document already exist");
-		}
-	}
-	
-	/**
-	 * Method to remove any {@link Document} from index.
-	 * @param documentId
-	 */
-	public void delete(String documentId) {
-		IndexDeleteService indexDeleteService = new IndexDeleteService();
-		
-		//deleting data from data map
-		Document document = dataMap.remove(documentId);
-		
-		if( document != null) {
-			indexDeleteService.deleteDocument(this, document, documentId);
-		}
 	}
 	
 	/**
@@ -251,10 +203,6 @@ public class Index {
 
 	public void setMetadata(Map<String, Object> metadata) {
 		this.metadata = metadata;
-	}
-
-	public MergePolicy getMergePolicy() {
-		return mergePolicy;
 	}
 
 }

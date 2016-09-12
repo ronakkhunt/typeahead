@@ -2,31 +2,25 @@ package com.typeahead.reader;
 
 import java.io.IOException;
 
-import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.matchers.JUnitMatchers;
 import org.junit.rules.ExpectedException;
 
+import com.typeahead.config.IndexConfig;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Document;
 import com.typeahead.index.Index;
 import com.typeahead.util.TestSet;
 import com.typeahead.util.TestUtil;
+import com.typeahead.writer.IndexWriter;
 import com.typeahead.writer.IndexWriterUtil;
 
 public class IndexReaderTest {
 	
-	IndexReader	reader;
-	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
-	
-	public IndexReaderTest() {
-		reader = new IndexReader();
-	}
 	
 	/**
 	 * Test mostly related to {@link IndexReader#_readDataMapFile}, <br>
@@ -37,34 +31,37 @@ public class IndexReaderTest {
 	 */
 	@Test
 	public void readingSegmentTest() throws IndexAlreadyExistException, IndexDoesNotExistException, IOException {
+		
 		String indexName = "_reader_segment_test";
-		IndexReader reader = new IndexReader();
+		IndexConfig config = new IndexConfig(indexName);
+		IndexReader reader = new IndexReader(config);
+		IndexWriter writer = new IndexWriter(config);
 		
 		//making sure index does not exist already.
 		try {
-			reader.deleteIndex(indexName);
+			reader.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
 		
-		Index test = reader.createIndex(indexName);
-		test.setMergeFactor(3);
+		reader.createIndex();
+		
+		reader.setMergeFactor(3);
 		
 		TestSet testSet = TestUtil.getTestSet(1);
 		
 		//Loading test data
 		for(Document d: testSet.getDocuments()) {
-			test.add(d);
+			writer.addDocument(d);
 		}
-		test.getMergePolicy().flushIndex();
+		writer.getMergePolicy().flushIndex();
 		
+		reader.close();
 		
-		test = null;
-		
-		test = reader.openIndex(indexName);
-		Assert.assertEquals(testSet.getDocuments().size(), test.getDataMap().size());
+		reader.openIndex();
+		Assert.assertEquals(testSet.getDocuments().size(), config.getIndex().getDataMap().size());
 		
 		//Cleaning the test index.
 		try {
-			reader.deleteIndex(indexName);
+			reader.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
 	}
 	
@@ -72,37 +69,42 @@ public class IndexReaderTest {
 	@Test
 	public void createIndexTest() throws IndexDoesNotExistException, IOException {
 		String indexName = "_create_test";
-		Index index = new Index(indexName);
-		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
+		
+		IndexConfig config = new IndexConfig(indexName);
+		IndexReader reader = new IndexReader(config);
+		
+		IndexWriterUtil writerUtil = new IndexWriterUtil(config.getIndex());
 
 		//TEST 1: create test
 		try {
-			index = reader.createIndex(indexName);
+			reader.createIndex();
 			Assert.assertTrue(writerUtil.doesIndexExistance());
 		} catch (IndexAlreadyExistException e) {
 			
 		}finally{
-			reader.deleteIndex(indexName);
+			reader.deleteIndex();
 		}
 	}
 	
 	public void openIndexTest() throws IndexDoesNotExistException {
 		String indexName = "_open_test";
-		Index index = new Index(indexName);
-		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
+		IndexConfig config = new IndexConfig(indexName);
+		IndexReader reader = new IndexReader(config);
+		
+		IndexWriterUtil writerUtil = new IndexWriterUtil(config.getIndex());
 
 		//TEST 1: open test
 		//TODO: Need to think of test case for IndexReader#openIndex() method
 		
 		//TEST 2: Exception test
 		try {
-			index = reader.openIndex(indexName);
+			reader.openIndex();
 			exception.expect(IndexDoesNotExistException.class);
 		    exception.expectMessage(indexName);
 			Assert.assertTrue(writerUtil.doesIndexExistance());
 		} catch (IndexDoesNotExistException e) {}
 		finally{
-			reader.deleteIndex(indexName);
+			reader.deleteIndex();
 		}
 	}
 	
@@ -110,26 +112,29 @@ public class IndexReaderTest {
 	@Test
 	public void deleteIndexTest() throws IOException {
 		
-		String indexName = "_del_test";
-		Index index = new Index(indexName);
-		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
-		
 		//TEST 1: Exception test
 		try {
-			reader.deleteIndex("_dummy_index");
+			IndexConfig config_test = new IndexConfig("__dummy_index");
+			IndexReader reader_test = new IndexReader(config_test);
+			reader_test.deleteIndex();
 		} catch (IndexDoesNotExistException e) {
 			Assert.assertTrue("Index: _dummy_index does not exist.".equals(e.getMessage()));
 		}
+		
+		String indexName = "_del_test";
+		IndexConfig config = new IndexConfig(indexName);
+		IndexReader reader = new IndexReader(config);
+		IndexWriterUtil writerUtil = new IndexWriterUtil(config.getIndex());
 				
 		//TEST 2: deletion test
 		try {
-			reader.createIndex(indexName);
+			reader.createIndex();
 		} catch (IndexAlreadyExistException e) {
 			
 		}
 		
 		try {
-			reader.deleteIndex(indexName);
+			reader.deleteIndex();
 			Assert.assertFalse(writerUtil.doesIndexExistance());
 		} catch (IndexDoesNotExistException e) {}
 		

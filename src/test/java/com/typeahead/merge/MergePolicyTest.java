@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.typeahead.config.IndexConfig;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Document;
@@ -12,6 +13,7 @@ import com.typeahead.index.Index;
 import com.typeahead.reader.IndexReader;
 import com.typeahead.util.TestSet;
 import com.typeahead.util.TestUtil;
+import com.typeahead.writer.IndexWriter;
 
 public class MergePolicyTest {
 	/**
@@ -23,30 +25,33 @@ public class MergePolicyTest {
 	@Test
 	public void ensurePolicyTest() throws IndexAlreadyExistException, IOException {
 		String indexName = "_merge_test";
-		IndexReader reader = new IndexReader();
+		IndexConfig config = new IndexConfig(indexName);
+		
+		IndexReader reader = new IndexReader(config);
+		IndexWriter writer = new IndexWriter(config);
 		
 		//making sure index does not exist already.
 		try {
-			reader.deleteIndex(indexName);
+			reader.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
 		
-		Index test = reader.createIndex(indexName);
-		test.setMergeFactor(3);
+		reader.createIndex();
+		reader.setMergeFactor(3);
 		
 		TestSet testSet = TestUtil.getTestSet(1);
 		
 		//Loading test data
 		for(Document d: testSet.getDocuments()) {
-			test.add(d);
+			writer.addDocument(d);
 		}
 		
-		Assert.assertEquals(2, test.getVersion());
+		Assert.assertEquals(2, writer.getIndexConfig().getIndex().getVersion());
 		
-		test.getMergePolicy().flushIndex();
+		writer.getMergePolicy().flushIndex();
 		
 		//Cleaning the test index.
 		try {
-			reader.deleteIndex(indexName);
+			reader.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
 	}
 }
