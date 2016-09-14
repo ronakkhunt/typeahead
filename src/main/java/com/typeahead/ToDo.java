@@ -11,6 +11,8 @@ import com.typeahead.writer.IndexWriter;
  */
 public class ToDo {
 	
+	
+	
 	/**
 	 * 6) Configuration to upload this as artifact in maven repository.
 	 * REFER:
@@ -37,12 +39,4 @@ public class ToDo {
 	 * Write now using Jackson to serialize the index data. Need to change this to proper
 	 * Faster method
 	 */
-	
-	/**
-	 * 1) API design for Index class itself.
-	 * 
-	 * this class has so many getter/setter which should not be exposed to end-user, but is required 
-	 * for now.
-	 */
-	
 }

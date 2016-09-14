@@ -114,7 +114,7 @@ public class IndexReaderTest {
 		
 		//TEST 1: Exception test
 		try {
-			IndexConfig config_test = new IndexConfig("__dummy_index");
+			IndexConfig config_test = new IndexConfig("_dummy_index");
 			IndexReader reader_test = new IndexReader(config_test);
 			reader_test.deleteIndex();
 		} catch (IndexDoesNotExistException e) {

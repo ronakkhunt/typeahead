@@ -68,16 +68,6 @@ public class Index {
 	}
 	
 	/**
-	 * This method will return result in Stringified JSON.
-	 * @param queryString
-	 * @return
-	 */
-	public List<Document> search(String field, String queryString) {
-		IndexSearchService searchService = new IndexSearchService();
-		return searchService.searchDocuments(this, field, queryString);
-	}
-	
-	/**
 	 * Returns list for mapped field(s), specified in {@link Index#mapping}
 	 * @return
 	 */
