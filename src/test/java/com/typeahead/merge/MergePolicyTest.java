@@ -35,7 +35,7 @@ public class MergePolicyTest {
 			reader.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
 		
-		reader.createIndex();
+		writer.createIndex();
 		reader.setMergeFactor(3);
 		
 		TestSet testSet = TestUtil.getTestSet(1);

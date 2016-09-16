@@ -43,7 +43,7 @@ public class IndexSearchServiceTest {
 		} catch (IndexDoesNotExistException e1) {}
 		
 		try {
-			reader.createIndex();
+			writer.createIndex();
 		} catch (IndexAlreadyExistException e) {}
 		
 		//set mapping

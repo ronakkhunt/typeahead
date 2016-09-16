@@ -42,7 +42,7 @@ public class IndexReaderTest {
 			reader.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
 		
-		reader.createIndex();
+		writer.createIndex();
 		
 		reader.setMergeFactor(3);
 		
@@ -72,12 +72,13 @@ public class IndexReaderTest {
 		
 		IndexConfig config = new IndexConfig(indexName);
 		IndexReader reader = new IndexReader(config);
+		IndexWriter writer = new IndexWriter(config);
 		
 		IndexWriterUtil writerUtil = new IndexWriterUtil(config.getIndex());
 
 		//TEST 1: create test
 		try {
-			reader.createIndex();
+			writer.createIndex();
 			Assert.assertTrue(writerUtil.doesIndexExistance());
 		} catch (IndexAlreadyExistException e) {
 			
@@ -124,11 +125,12 @@ public class IndexReaderTest {
 		String indexName = "_del_test";
 		IndexConfig config = new IndexConfig(indexName);
 		IndexReader reader = new IndexReader(config);
+		IndexWriter writer = new IndexWriter(config);
 		IndexWriterUtil writerUtil = new IndexWriterUtil(config.getIndex());
 				
 		//TEST 2: deletion test
 		try {
-			reader.createIndex();
+			writer.createIndex();
 		} catch (IndexAlreadyExistException e) {
 			
 		}

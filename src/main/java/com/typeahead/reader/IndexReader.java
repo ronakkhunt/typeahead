@@ -13,6 +13,7 @@ import com.typeahead.index.Document;
 import com.typeahead.index.Index;
 import com.typeahead.reader.services.IndexReaderService;
 import com.typeahead.utils.FileUtil;
+import com.typeahead.writer.IndexWriter;
 import com.typeahead.writer.IndexWriterUtil;
 
 
@@ -23,23 +24,10 @@ import com.typeahead.writer.IndexWriterUtil;
 public class IndexReader {
 	
 	IndexReaderService readerService;
-	Index index;
+	IndexConfig indexConfig;
 	public IndexReader(IndexConfig config) {
 		readerService = new IndexReaderService();
-		index = config.getIndex();
-	}
-	
-	/**
-	 * Create new {@link Index}. 
-	 * @param indexName
-	 * @return
-	 * @throws IndexAlreadyExistException
-	 * @throws IOException 
-	 */
-	public IndexReader createIndex() throws IndexAlreadyExistException, IOException {
-		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
-		writerUtil.createIndexFiles();
-		return this;
+		indexConfig = config;
 	}
 	
 	/**
@@ -50,7 +38,7 @@ public class IndexReader {
 	 */
 	@SuppressWarnings("unchecked")
 	public IndexReader openIndex() throws IndexDoesNotExistException {
-		
+		Index index = indexConfig.getIndex();
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
 		
 		if(!writerUtil.doesIndexExistance()) {
@@ -88,11 +76,11 @@ public class IndexReader {
 		// Need to verify integrity of this code.
 		
 		
-		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
+		IndexWriterUtil writerUtil = new IndexWriterUtil(indexConfig.getIndex());
 		
 		if(!writerUtil.doesIndexExistance()) {
 			try {
-				return createIndex();
+				return _createIndex();
 			}catch(IndexAlreadyExistException ex){
 				// TODO Auto-generated catch block
 				ex.printStackTrace();
@@ -110,18 +98,30 @@ public class IndexReader {
 	}
 	
 	/**
+	 * Created index using {@link IndexWriter} ans set it in {@link IndexReader}
+	 * 
+	 * NOTE: Ideally createIndex() is there in {@link IndexWriter}, but to define<br>
+	 * {@link IndexReader#createOrOpenIndex()} we need to define this private method. 
+	 * 
+	 * @return
+	 * @throws IndexAlreadyExistException
+	 * @throws IOException
+	 */
+	private IndexReader _createIndex() throws IndexAlreadyExistException, IOException {
+		IndexWriter writer = new IndexWriter(indexConfig);
+		writer.createIndex();
+		return this;
+	}
+
+	/**
 	 * Delete {@link Index}
 	 * @param indexName
 	 * @throws IndexDoesNotExistException 
 	 */
 	public void deleteIndex() throws IndexDoesNotExistException {
 		
-		IndexWriterUtil writerUtil = new IndexWriterUtil(index );
+		IndexWriterUtil writerUtil = new IndexWriterUtil(indexConfig.getIndex());
 		writerUtil.deleteIndexFiles();
-	}
-	
-	public void setMapping(Map<String, String> mapping) {
-		index.setMapping(mapping);
 	}
 	
 	/**
@@ -144,7 +144,13 @@ public class IndexReader {
 	}
 	
 	public void setMergeFactor(int value) {
+		Index index = indexConfig.getIndex();
 		index.setMergeFactor(value);
+	}
+	
+	public void setMapping(Map<String, String> mapping) {
+		Index index = indexConfig.getIndex();
+		index.setMapping(mapping);
 	}
 
 	public void close() {

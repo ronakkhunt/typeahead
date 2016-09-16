@@ -1,16 +1,19 @@
 package com.typeahead.writer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.typeahead.config.IndexConfig;
 import com.typeahead.exceptions.DocumentAlreadyExistException;
+import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.index.Document;
 import com.typeahead.index.Index;
 import com.typeahead.index.services.IndexAddService;
 import com.typeahead.index.services.IndexDeleteService;
 import com.typeahead.merge.MergePolicy;
+import com.typeahead.reader.IndexReader;
 import com.typeahead.reader.services.IndexReaderService;
 import com.typeahead.utils.FileUtil;
 import com.typeahead.writer.services.IndexWriterService;
@@ -37,7 +40,20 @@ public class IndexWriter {
 	}
 	
 	/**
-	 * Method to remove any {@link Document} from index.
+	 * Create new {@link Index}. 
+	 * @param indexName
+	 * @return
+	 * @throws IndexAlreadyExistException
+	 * @throws IOException 
+	 */
+	public IndexWriter createIndex() throws IndexAlreadyExistException, IOException {
+		IndexWriterUtil writerUtil = new IndexWriterUtil(indexConfig.getIndex());
+		writerUtil.createIndexFiles();
+		return this;
+	}
+	
+	/**
+	 * Method to remove any {@link Document} from {@link Index}.
 	 * @param documentId
 	 */
 	public void deleteDocument(String documentId) {
