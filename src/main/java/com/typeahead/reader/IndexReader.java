@@ -41,7 +41,7 @@ public class IndexReader {
 		Index index = indexConfig.getIndex();
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
 		
-		if(!writerUtil.doesIndexExistance()) {
+		if(!writerUtil.doesIndexExist()) {
 			throw new IndexDoesNotExistException("Index: "+index.getName()+" does not exist.");
 		}	
 		
@@ -78,7 +78,7 @@ public class IndexReader {
 		
 		IndexWriterUtil writerUtil = new IndexWriterUtil(indexConfig.getIndex());
 		
-		if(!writerUtil.doesIndexExistance()) {
+		if(!writerUtil.doesIndexExist()) {
 			try {
 				return _createIndex();
 			}catch(IndexAlreadyExistException ex){
@@ -111,17 +111,6 @@ public class IndexReader {
 		IndexWriter writer = new IndexWriter(indexConfig);
 		writer.createIndex();
 		return this;
-	}
-
-	/**
-	 * Delete {@link Index}
-	 * @param indexName
-	 * @throws IndexDoesNotExistException 
-	 */
-	public void deleteIndex() throws IndexDoesNotExistException {
-		
-		IndexWriterUtil writerUtil = new IndexWriterUtil(indexConfig.getIndex());
-		writerUtil.deleteIndexFiles();
 	}
 	
 	/**

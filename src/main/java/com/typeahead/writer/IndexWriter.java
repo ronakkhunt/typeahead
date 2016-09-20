@@ -8,6 +8,7 @@ import java.util.Map;
 import com.typeahead.config.IndexConfig;
 import com.typeahead.exceptions.DocumentAlreadyExistException;
 import com.typeahead.exceptions.IndexAlreadyExistException;
+import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Document;
 import com.typeahead.index.Index;
 import com.typeahead.index.services.IndexAddService;
@@ -49,7 +50,39 @@ public class IndexWriter {
 	public IndexWriter createIndex() throws IndexAlreadyExistException, IOException {
 		IndexWriterUtil writerUtil = new IndexWriterUtil(indexConfig.getIndex());
 		writerUtil.createIndexFiles();
+		
+		/**
+		 * Whenever the Index is getting created for the first time.
+		 * Writing the empty index into file. to avoid error occuring
+		 * while reading empty file in IndexReaderServices#read
+		 * 
+		 * NOTE: this may be removed later, when we have different method.
+		 * 
+		 * ERROR:
+		 * 	com.fasterxml.jackson.databind.JsonMappingException: No content to map due to end-of-input
+ 			at [Source: ./_create_or_open_test/metadata.metadata; line: 1, column: 0]
+ 				at com.fasterxml.jackson.databind.JsonMappingException.from(JsonMappingException.java:261)
+				at com.fasterxml.jackson.databind.ObjectMapper._initForReading(ObjectMapper.java:3829)
+				at com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(ObjectMapper.java:3774)
+				at com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:2731)
+				at com.typeahead.reader.services.IndexReaderService.read(IndexReaderService.java:27)
+ 				...
+		 *  
+		 */
+		writeIndex();
+		
 		return this;
+	}
+	
+	/**
+	 * Delete {@link Index}
+	 * @param indexName
+	 * @throws IndexDoesNotExistException 
+	 */
+	public void deleteIndex() throws IndexDoesNotExistException {
+		
+		IndexWriterUtil writerUtil = new IndexWriterUtil(indexConfig.getIndex());
+		writerUtil.deleteIndexFiles();
 	}
 	
 	/**
@@ -98,7 +131,7 @@ public class IndexWriter {
 			}
 		}catch(DocumentAlreadyExistException e) {
 			//TODO: should LOG something here.
-			System.out.println("Document already exist");
+			System.out.println(e.getMessage());
 		}
 	}
 	

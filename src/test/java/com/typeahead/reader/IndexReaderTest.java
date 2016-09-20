@@ -39,7 +39,7 @@ public class IndexReaderTest {
 		
 		//making sure index does not exist already.
 		try {
-			reader.deleteIndex();
+			writer.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
 		
 		writer.createIndex();
@@ -61,36 +61,42 @@ public class IndexReaderTest {
 		
 		//Cleaning the test index.
 		try {
-			reader.deleteIndex();
+			writer.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
 	}
 	
-	
 	@Test
-	public void createIndexTest() throws IndexDoesNotExistException, IOException {
-		String indexName = "_create_test";
-		
+	public void createOrOpenIndexTest() throws IOException {
+		String indexName = "_create_or_open_test";
 		IndexConfig config = new IndexConfig(indexName);
 		IndexReader reader = new IndexReader(config);
 		IndexWriter writer = new IndexWriter(config);
 		
-		IndexWriterUtil writerUtil = new IndexWriterUtil(config.getIndex());
-
-		//TEST 1: create test
+		//TEST 1: creating the Index
 		try {
-			writer.createIndex();
-			Assert.assertTrue(writerUtil.doesIndexExistance());
-		} catch (IndexAlreadyExistException e) {
-			
-		}finally{
-			reader.deleteIndex();
-		}
+			writer.deleteIndex();
+		} catch (IndexDoesNotExistException e) {}
+		
+		reader.createOrOpenIndex();
+		
+		//TEST 2: opening the Index
+		reader = new IndexReader(new IndexConfig(indexName));
+		
+		reader.createOrOpenIndex();
+		
+		//clean up
+		try {
+			writer.deleteIndex();
+		} catch (IndexDoesNotExistException e) {}
+		
 	}
 	
-	public void openIndexTest() throws IndexDoesNotExistException {
+	@Test
+	public void openIndexTest() {
 		String indexName = "_open_test";
 		IndexConfig config = new IndexConfig(indexName);
 		IndexReader reader = new IndexReader(config);
+		IndexWriter writer = new IndexWriter(config);
 		
 		IndexWriterUtil writerUtil = new IndexWriterUtil(config.getIndex());
 
@@ -102,43 +108,14 @@ public class IndexReaderTest {
 			reader.openIndex();
 			exception.expect(IndexDoesNotExistException.class);
 		    exception.expectMessage(indexName);
-			Assert.assertTrue(writerUtil.doesIndexExistance());
-		} catch (IndexDoesNotExistException e) {}
-		finally{
-			reader.deleteIndex();
-		}
-	}
-	
-	
-	@Test
-	public void deleteIndexTest() throws IOException {
-		
-		//TEST 1: Exception test
-		try {
-			IndexConfig config_test = new IndexConfig("_dummy_index");
-			IndexReader reader_test = new IndexReader(config_test);
-			reader_test.deleteIndex();
-		} catch (IndexDoesNotExistException e) {
-			Assert.assertTrue("Index: _dummy_index does not exist.".equals(e.getMessage()));
-		}
-		
-		String indexName = "_del_test";
-		IndexConfig config = new IndexConfig(indexName);
-		IndexReader reader = new IndexReader(config);
-		IndexWriter writer = new IndexWriter(config);
-		IndexWriterUtil writerUtil = new IndexWriterUtil(config.getIndex());
-				
-		//TEST 2: deletion test
-		try {
-			writer.createIndex();
-		} catch (IndexAlreadyExistException e) {
-			
-		}
-		
-		try {
-			reader.deleteIndex();
-			Assert.assertFalse(writerUtil.doesIndexExistance());
+			Assert.assertTrue(writerUtil.doesIndexExist());
 		} catch (IndexDoesNotExistException e) {}
 		
+		
+		//clean up
+		try {
+			writer.deleteIndex();
+		} catch (IndexDoesNotExistException e) {}
 	}
+	
 }

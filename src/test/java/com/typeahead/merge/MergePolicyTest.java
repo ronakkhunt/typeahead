@@ -32,7 +32,7 @@ public class MergePolicyTest {
 		
 		//making sure index does not exist already.
 		try {
-			reader.deleteIndex();
+			writer.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
 		
 		writer.createIndex();
@@ -51,7 +51,7 @@ public class MergePolicyTest {
 		
 		//Cleaning the test index.
 		try {
-			reader.deleteIndex();
+			writer.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
 	}
 }

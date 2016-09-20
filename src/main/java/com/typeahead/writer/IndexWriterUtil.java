@@ -28,7 +28,7 @@ public class IndexWriterUtil {
 	 * It check for existence of data directory at expected path/location.
 	 * @return
 	 */
-	public boolean doesIndexExistance() {
+	public boolean doesIndexExist() {
 		String indexPath = index.getDataDirectory() + index.getName();
 		
 		File indexDirectory = new File(indexPath);
@@ -46,7 +46,7 @@ public class IndexWriterUtil {
 	public void createIndexFiles() throws IndexAlreadyExistException, IOException {
 		String rootPath = index.getDataDirectory() + index.getName();
 
-		if(doesIndexExistance()) {
+		if(doesIndexExist()) {
 			throw new IndexAlreadyExistException("Index: "+index.getName()+" Already Exist");
 		}
 		
@@ -89,7 +89,7 @@ public class IndexWriterUtil {
 	public void deleteIndexFiles() throws IndexDoesNotExistException {
 		String indexPath = index.getDataDirectory() + index.getName();
 		
-		if(!doesIndexExistance()) {
+		if(!doesIndexExist()) {
 			throw new IndexDoesNotExistException("Index: "+index.getName()+" does not exist.");
 		}
 		

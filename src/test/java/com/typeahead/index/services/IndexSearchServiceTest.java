@@ -39,7 +39,7 @@ public class IndexSearchServiceTest {
 		
 		//making sure index does not exist.
 		try {
-			reader.deleteIndex();
+			writer.deleteIndex();
 		} catch (IndexDoesNotExistException e1) {}
 		
 		try {
@@ -78,7 +78,7 @@ public class IndexSearchServiceTest {
 		Assert.assertArrayEquals(expected_result_array, result_array);
 		
 		try {
-			reader.deleteIndex();
+			writer.deleteIndex();
 		} catch (IndexDoesNotExistException e1) {}
 	}
 	
