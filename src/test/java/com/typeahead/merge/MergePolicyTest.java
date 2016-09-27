@@ -47,11 +47,25 @@ public class MergePolicyTest {
 		
 		Assert.assertEquals(2, writer.getIndexConfig().getIndex().getVersion());
 		
-		writer.getMergePolicy().flushIndex();
+		writer.flushIndex();
 		
 		//Cleaning the test index.
 		try {
 			writer.deleteIndex();
 		} catch (IndexDoesNotExistException e) {}
+	}
+	
+	@Test
+	public void getSegmentNumberTest() {
+		Assert.assertEquals("2.5", MergePolicy.getSegmentNumber(3, 10, 530, 475));
+		Assert.assertEquals(null, MergePolicy.getSegmentNumber(3, 10, 528, 523));
+		
+		Assert.assertEquals("3.1", MergePolicy.getSegmentNumber(3, 10, 1000, 1000));
+		Assert.assertEquals(null, MergePolicy.getSegmentNumber(3, 11, 1000, 1000));
+		
+		Assert.assertEquals("3.1", MergePolicy.getSegmentNumber(4, 10, 2412, 145));
+		
+		Assert.assertEquals("4.7", MergePolicy.getSegmentNumber(4, 10, 190320, 65535));
+		Assert.assertEquals("1.2", MergePolicy.getSegmentNumber(4, 10, 190320, 190320-1));
 	}
 }

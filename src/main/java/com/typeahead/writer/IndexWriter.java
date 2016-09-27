@@ -135,6 +135,32 @@ public class IndexWriter {
 		}
 	}
 	
+	
+	/**
+	 * Writes given {@link Document} onto the disk with {@link FileExtension#DATA_MAP_DOCUMENT} extension.
+	 * @param document
+	 */
+	private void flushDocument(Document document) {
+		
+	}
+	
+	/**
+	 * Used before closing the index, to write remaining data onto files.
+	 * It will use last version + 1 to create last segment
+	 */
+	public void flushIndex() {
+		flushIndex(indexConfig.getIndex().getVersion() + 1);
+	}
+	
+	/**
+	 * Flushes/Writes data onto disk, creating file with given version.
+	 * @param newSegmentVersion
+	 */
+	public void flushIndex(int newSegmentVersion) {
+		indexConfig.getIndex().setVersion(newSegmentVersion);
+		writeIndex();
+	}
+	
 	public void writeIndex() {
 		Index index = indexConfig.getIndex();
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);

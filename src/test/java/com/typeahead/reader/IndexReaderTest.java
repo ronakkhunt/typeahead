@@ -52,7 +52,7 @@ public class IndexReaderTest {
 		for(Document d: testSet.getDocuments()) {
 			writer.addDocument(d);
 		}
-		writer.getMergePolicy().flushIndex();
+		writer.flushIndex();
 		
 		reader.close();
 		
