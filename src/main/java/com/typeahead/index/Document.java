@@ -11,6 +11,7 @@ public class Document {
 	
 	Map<String, String> entity;
 	String id;
+	Long sequenceId;
 
 	public Document() {
 		entity = new HashMap<String, String>();
@@ -27,8 +28,17 @@ public class Document {
 		return entity.get(key);
 	}
 	
-	public void set(String key, String value){
+	public void put(String key, String value){
 		entity.put(key, value);
+	}
+	
+	
+	public Long getSequenceId() {
+		return sequenceId;
+	}
+
+	public void setSequenceId(Long sequenceId) {
+		this.sequenceId = sequenceId;
 	}
 
 	public String getId() {
@@ -45,6 +55,14 @@ public class Document {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	public static void main(String[] args) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("2", Long.valueOf("1"));
+		
+		int a = (Integer)map.get("2");
+		
 	}
 	
 }

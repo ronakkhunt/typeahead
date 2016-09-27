@@ -1,7 +1,8 @@
 package com.typeahead.constants;
 
 public enum FileExtension {
-	DATA_MAP(".dm"), FIELD_FST_MAP(".ffm"), MAPPING(".mapping"), METADATA(".metadata")
+	DATA_MAP(".dm"), FIELD_FST_MAP(".ffm"), MAPPING(".mapping"), METADATA(".metadata"),
+	DATA_MAP_DOCUMENT(".dmd")
 	;
 	
 	private String extension;

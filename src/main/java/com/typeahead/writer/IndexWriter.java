@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.typeahead.config.IndexConfig;
+import com.typeahead.constants.FileExtension;
 import com.typeahead.exceptions.DocumentAlreadyExistException;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
@@ -14,7 +15,6 @@ import com.typeahead.index.Index;
 import com.typeahead.index.services.IndexAddService;
 import com.typeahead.index.services.IndexDeleteService;
 import com.typeahead.merge.MergePolicy;
-import com.typeahead.reader.IndexReader;
 import com.typeahead.reader.services.IndexReaderService;
 import com.typeahead.utils.FileUtil;
 import com.typeahead.writer.services.IndexWriterService;
@@ -117,6 +117,12 @@ public class IndexWriter {
 		
 		Map<String, Document> dataMap = index.getDataMap();
 		
+		
+		//setting global document sequence number to document being added.
+		Long documentSequenceNumber = index.getDocumentSequenceNumber();
+		document.setSequenceId(documentSequenceNumber);
+		
+		
 		try {
 			if(!dataMap.containsKey(id)) {
 				//put data into data map
@@ -125,7 +131,17 @@ public class IndexWriter {
 				//index data into fst
 				indexAddService.indexDocument(index, document, id);
 				
+				/**
+				 * Writing each Document to disk to avoid data loss, incase of crash.
+				 */
+				flushDocument(document);
+				
+				//incrementing global document sequence number
+				index.setDocumentSequenceNumber(documentSequenceNumber + 1);
+				
 				mergePolicy.ensurePolicy();
+				
+				
 			}else{
 				throw new DocumentAlreadyExistException("Document with id: "+id+" already Exists");
 			}

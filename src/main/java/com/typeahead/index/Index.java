@@ -5,12 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.typeahead.exceptions.DocumentAlreadyExistException;
-import com.typeahead.index.services.IndexAddService;
-import com.typeahead.index.services.IndexDeleteService;
-import com.typeahead.index.services.IndexSearchService;
-import com.typeahead.merge.MergePolicy;
-
 /**
  * This class will be used to reference any index and store metadata about the index.
  * @author ronakkhunt
@@ -59,7 +53,8 @@ public class Index {
 		mapping = new HashMap<String, String>();
 		
 		metadata = new HashMap<String, Object>();
-		metadata.put("maxDocCount", 1000);
+		metadata.put("maxMergeLevel", 3);
+		metadata.put("currentDocumentNumber", Long.valueOf("1"));
 		metadata.put("mergeFactor", 10);
 		metadata.put("version", 1);
 		
@@ -139,6 +134,19 @@ public class Index {
 	public int getVersion() {
 		return (Integer)this.metadata.get("version");
 	}
+	
+	/**
+	 * Returns global current document sequence number. 
+	 * @return
+	 */
+	public Long getDocumentSequenceNumber() {
+		return (Long)this.metadata.get("currentDocumentNumber");
+	}
+	
+	public void setDocumentSequenceNumber(Long sequenceNumber) {
+		this.metadata.put("currentDocumentNumber", sequenceNumber);
+	}
+	
 	
 	public String getName() {
 		return name;
