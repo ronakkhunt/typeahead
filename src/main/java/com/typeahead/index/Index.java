@@ -15,7 +15,7 @@ public class Index {
 	String name;
 	
 	/**
-	 * Global sequence for document in Index.
+	 * Global sequence for {@link Document}.
 	 */
 	Long currentDocumentNumber;
 	

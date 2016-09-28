@@ -3,6 +3,7 @@ package com.typeahead.merge;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.typeahead.index.Document;
 import com.typeahead.index.Index;
 import com.typeahead.writer.IndexWriter;
 
@@ -45,7 +46,8 @@ public class MergePolicy {
 	}
 	
 	/**
-	 * Return segment number in which the given search document is lying at current merge Situation. 
+	 * Returns segment number, in which the given search {@link Document} is lying at current Situation.<br>
+	 * Returns null if {@link Document} is not merged yet. 
 	 * @param maxLevel
 	 * @param mergeFactor
 	 * @param totalDocumentCount

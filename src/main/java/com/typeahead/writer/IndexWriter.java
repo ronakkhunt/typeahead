@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.typeahead.async.AsyncTaskExecutor;
+import com.typeahead.async.FlushDocumentAsync;
 import com.typeahead.config.IndexConfig;
 import com.typeahead.constants.FileExtension;
 import com.typeahead.exceptions.DocumentAlreadyExistException;
@@ -123,7 +125,6 @@ public class IndexWriter {
 		Long documentSequenceNumber = index.getDocumentSequenceNumber();
 		document.setSequenceId(documentSequenceNumber);
 		
-		
 		try {
 			if(!dataMap.containsKey(id)) {
 				//put data into data map
@@ -159,6 +160,8 @@ public class IndexWriter {
 	 */
 	private void flushDocument(Document document) {
 		File docFile = writerUtil.getDocumentFile(document.getId());
+		//TODO: this task can be done Asynchronously as following later.
+//		AsyncTaskExecutor.submit(new FlushDocumentAsync(docFile, document, writerService));
 		writerService.write(docFile, document);
 	}
 	
