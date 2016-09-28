@@ -123,12 +123,23 @@ public class IndexReader {
 	private void _readDataMapFile(Index index, IndexWriterUtil writerUtil) {
 		Map<String, Document> dataMap = new HashMap<String, Document>();
 		
+		//Reading all segment with FileExtension.DATA_MAP
 		File[] dataMapFiles = FileUtil.getAllFilesEndingWith(index.getIndexDirectoryPath(), 
 				FileExtension.DATA_MAP.getExtension());
 		
 		for(File f: dataMapFiles) {
 			dataMap.putAll(readerService.read(f, HashMap.class));
 		}
+		
+		//Reading Individual all document file(s).
+		File[] dataDocumentFiles = FileUtil.getAllFilesEndingWith(index.getIndexDirectoryPath(),
+				FileExtension.DATA_MAP_DOCUMENT.getExtension());
+		
+		for(File f: dataDocumentFiles) {
+			Document doc = readerService.read(f, Document.class);
+			dataMap.put(doc.getId(), doc);
+		}
+		
 		index.setDataMap(dataMap);
 	}
 	

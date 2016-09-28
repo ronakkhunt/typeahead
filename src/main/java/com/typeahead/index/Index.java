@@ -15,6 +15,12 @@ public class Index {
 	String name;
 	
 	/**
+	 * Global sequence for document in Index.
+	 */
+	Long currentDocumentNumber;
+	
+	
+	/**
 	 * Map to store metadata about the files stored on the Disk
 	 */
 	Map<String, Object> metadata;
@@ -54,9 +60,11 @@ public class Index {
 		
 		metadata = new HashMap<String, Object>();
 		metadata.put("maxMergeLevel", 3);
-		metadata.put("currentDocumentNumber", Long.valueOf("1"));
+//		metadata.put("currentDocumentNumber", Long.valueOf("1"));
 		metadata.put("mergeFactor", 10);
 		metadata.put("version", 1);
+		
+		this.currentDocumentNumber = Long.valueOf("1");
 		
 		this.name = name;
 		dataDirectory = _getDataDirectoryPath();
@@ -140,11 +148,11 @@ public class Index {
 	 * @return
 	 */
 	public Long getDocumentSequenceNumber() {
-		return (Long)this.metadata.get("currentDocumentNumber");
+		return this.currentDocumentNumber;
 	}
 	
 	public void setDocumentSequenceNumber(Long sequenceNumber) {
-		this.metadata.put("currentDocumentNumber", sequenceNumber);
+		this.currentDocumentNumber = sequenceNumber;
 	}
 	
 	

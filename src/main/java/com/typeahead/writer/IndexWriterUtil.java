@@ -105,13 +105,11 @@ public class IndexWriterUtil {
 	 * @return
 	 */
 	private File getFile(String prefix, String name){
-		//TODO: there should be some check here, what if this file does not exist?
 		return new File(prefix+name);
 	}
 	
 	/**
 	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#dataMap}
-	 * @param index
 	 * @return
 	 */
 	public File getDataMapFile() {
@@ -119,6 +117,11 @@ public class IndexWriterUtil {
 		return getDataMapFile(version);
 	}
 	
+	/**
+	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#dataMap}
+	 * @param version
+	 * @return
+	 */
 	public File getDataMapFile(int version) {
 		String fileName = "/dataMap_" + version + FileExtension.DATA_MAP.getExtension();
 		return getFile(index.getIndexDirectoryPath(), fileName);
@@ -144,8 +147,24 @@ public class IndexWriterUtil {
 		return getFile(index.getIndexDirectoryPath(), fileName);
 	}
 
+	/**
+	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#metadata}
+	 * @param index
+	 * @return
+	 */
 	public File getMetadataFile() {
 		String fileName = "/metadata"+FileExtension.METADATA.getExtension();
+		return getFile(index.getIndexDirectoryPath(), fileName);
+	}
+	
+	/**
+	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#metadata}
+	 * Here file name is ID of the {@link Document}.
+	 * @param index
+	 * @return
+	 */
+	public File getDocumentFile(String id) {
+		String fileName = "/"+id+FileExtension.DATA_MAP_DOCUMENT.getExtension();
 		return getFile(index.getIndexDirectoryPath(), fileName);
 	}
 	

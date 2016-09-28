@@ -33,11 +33,13 @@ public class IndexWriter {
 	MergePolicy mergePolicy;
 	
 	IndexWriterService writerService;
+	IndexWriterUtil writerUtil;
 	IndexConfig indexConfig;
 	public IndexWriter(IndexConfig config){
 		writerService = new IndexWriterService();
 		indexConfig = config;
 		mergePolicy = new MergePolicy(this);
+		writerUtil = new IndexWriterUtil(indexConfig.getIndex());
 	}
 	
 	/**
@@ -48,7 +50,7 @@ public class IndexWriter {
 	 * @throws IOException 
 	 */
 	public IndexWriter createIndex() throws IndexAlreadyExistException, IOException {
-		IndexWriterUtil writerUtil = new IndexWriterUtil(indexConfig.getIndex());
+
 		writerUtil.createIndexFiles();
 		
 		/**
@@ -81,7 +83,6 @@ public class IndexWriter {
 	 */
 	public void deleteIndex() throws IndexDoesNotExistException {
 		
-		IndexWriterUtil writerUtil = new IndexWriterUtil(indexConfig.getIndex());
 		writerUtil.deleteIndexFiles();
 	}
 	
@@ -157,7 +158,8 @@ public class IndexWriter {
 	 * @param document
 	 */
 	private void flushDocument(Document document) {
-		
+		File docFile = writerUtil.getDocumentFile(document.getId());
+		writerService.write(docFile, document);
 	}
 	
 	/**
@@ -179,7 +181,6 @@ public class IndexWriter {
 	
 	public void writeIndex() {
 		Index index = indexConfig.getIndex();
-		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
 		
 		File indexDataMap = writerUtil.getDataMapFile();
 		File fieldFSTMap = writerUtil.getFieldFSTMapFile();
@@ -217,8 +218,7 @@ public class IndexWriter {
 	@SuppressWarnings("unchecked")
 	private void mergeDataMapFile(Index index, int startSegmentNumber, int mergeFactor) {
 		int temp = startSegmentNumber;
-		
-		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
+
 		IndexReaderService readerService = new IndexReaderService();
 		
 		Map<String, Document> mergedMap = new HashMap<String, Document>();
