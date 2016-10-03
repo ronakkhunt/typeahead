@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.typeahead.writer.IndexWriter;
+
 /**
  * This class will be used to reference any index and store metadata about the index.
  * @author ronakkhunt
@@ -43,6 +45,12 @@ public class Index {
 	 * 
 	 */
 	Map<String, Document> dataMap;
+	
+	/**
+	 * Temporary map which store document, which has not been flushed onto the disk, <br>
+	 * however it has been written onto disk by {@link IndexWriter#flushDocument()}
+	 */
+	Map<String, Document> inMemoryDataMap;
 	
 	/**
 	 * key-value pair to specify field to be searched.
@@ -118,6 +126,10 @@ public class Index {
 	/**********************************************************************************
 	 ****************************    GETTERS AND SETTERS    ***************************
 	 **********************************************************************************/
+	
+	public Map<String, Document> getInMemoryDataMap() {
+		return inMemoryDataMap;
+	}
 	
 	/**
 	 * Return base path for {@link Index} directory.

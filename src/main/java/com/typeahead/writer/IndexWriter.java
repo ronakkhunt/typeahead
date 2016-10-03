@@ -119,7 +119,7 @@ public class IndexWriter {
 		Index index = indexConfig.getIndex();
 		
 		Map<String, Document> dataMap = index.getDataMap();
-		
+		Map<String, Document> inMemoryDataMap = index.getDataMap();
 		
 		//setting global document sequence number to document being added.
 		Long documentSequenceNumber = index.getDocumentSequenceNumber();
@@ -129,6 +129,9 @@ public class IndexWriter {
 			if(!dataMap.containsKey(id)) {
 				//put data into data map
 				dataMap.put(id, document);
+				
+				//put data into temporary in-memory data map.
+				inMemoryDataMap.put(id, document);
 				
 				//index data into fst
 				indexAddService.indexDocument(index, document, id);
@@ -180,6 +183,7 @@ public class IndexWriter {
 	public void flushIndex(int newSegmentVersion) {
 		indexConfig.getIndex().setVersion(newSegmentVersion);
 		writeIndex();
+		cleanDataMapDocumentFiles();
 	}
 	
 	public void writeIndex() {
@@ -190,12 +194,34 @@ public class IndexWriter {
 		File mapping = writerUtil.getMappingFile();
 		File metadata = writerUtil.getMetadataFile();
 		
-		writerService.write(indexDataMap, index.getDataMap());
+		writerService.write(indexDataMap, getDataMapDocumentsToFlush());
 		writerService.write(fieldFSTMap, index.getFieldFSTMap());
 		writerService.write(mapping, index.getMapping());
 		writerService.write(metadata, index.getMetadata());
 	}
 	
+	/**
+	 * Returns in-memory document that has not been flushed into segment yet,
+	 * however it has been written onto disk by {@link IndexWriter#flushDocument()}
+	 * @return
+	 */
+	private Map<String, Document> getDataMapDocumentsToFlush() {
+		
+		//Maintaining the copy of Index#inMemoryDataMap to return result before clearing Map
+		Map<String, Document> inMemoryDataMapResult = new HashMap<String, Document>();
+		
+		Map<String, Document> inMemoryDataMap = indexConfig.getIndex().getInMemoryDataMap();
+		
+		inMemoryDataMapResult.putAll(inMemoryDataMap);
+		
+		//Once these document are written into segment. we need to clear this Map
+		inMemoryDataMap.clear();
+		
+		return inMemoryDataMapResult;
+				
+		
+	}
+
 	/**
 	 * Merge all types of segments related to {@link Index} like <br>
 	 * {@link Index#getDataMap()}, {@link Index#getDataMap()}, {@link Index#getMapping()} etc.
@@ -241,6 +267,19 @@ public class IndexWriter {
 		File mergedSegmentFile = writerUtil.getDataMapFile(newSegmentVersion);
 		writerService.write(mergedSegmentFile, mergedMap);
 		
+	}
+	
+	/**
+	 * Remove all file with extension {@link FileExtension#DATA_MAP_DOCUMENT} created in<br>
+	 * {@link IndexWriter#flushDocument()}
+	 * 
+	 * These file represent the individual {@link Document}, which has not been merged yet.
+	 * It needs to be remove when merging occur.
+	 * 
+	 */
+	private void cleanDataMapDocumentFiles() {
+		FileUtil.getAllFilesEndingWith(indexConfig.getIndex().getIndexDirectoryPath(),
+				FileExtension.DATA_MAP_DOCUMENT.getExtension());
 	}
 	
 	public IndexConfig getIndexConfig() {
