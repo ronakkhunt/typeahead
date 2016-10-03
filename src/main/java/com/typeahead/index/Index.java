@@ -64,6 +64,7 @@ public class Index {
 		fieldFSTMap = new HashMap<String, Map<String,Map<Character,IndexState>>>();
 		
 		dataMap = new HashMap<String, Document>();
+		inMemoryDataMap = new HashMap<String, Document>();
 		mapping = new HashMap<String, String>();
 		
 		metadata = new HashMap<String, Object>();
