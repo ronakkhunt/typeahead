@@ -52,7 +52,6 @@ public class IndexReaderTest {
 		for(Document d: testSet.getDocuments()) {
 			writer.addDocument(d);
 		}
-		writer.flushIndex();
 		
 		reader.close();
 		

@@ -1,8 +1,5 @@
 package com.typeahead.merge;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.typeahead.index.Document;
 import com.typeahead.index.Index;
 import com.typeahead.writer.IndexWriter;
@@ -26,22 +23,24 @@ public class MergePolicy {
 	public void ensurePolicy() {
 		int docCount = index.getDataMap().size();
 		int mergeFactor = getMergeFactor();
-		int newSegmentVesrion = docCount / mergeFactor ;
+		int currentMergeLevel = 1;
+		int newSegmentVersion = docCount / mergeFactor ;
 		if(docCount % mergeFactor == 0) {
-			writer.flushIndex(newSegmentVesrion);
-			ensure(docCount);
+			writer.flushIndex(newSegmentVersion, currentMergeLevel);
+			ensure(docCount, currentMergeLevel);
 		}
 	}
-	public void ensure(int docCount) {
+	public void ensure(int docCount, int mergeLevel) {
 		int mergeFactor = getMergeFactor();
-		int newSegmentVesrion = docCount / mergeFactor;
-		index.getMetadata().put("version", newSegmentVesrion);
+		int maxMergeLevel = getMaxMergeLevel();
+		int newSegmentVersion = docCount / mergeFactor;
+		index.setVersion(newSegmentVersion);
 		
-		if(newSegmentVesrion % mergeFactor == 0) {
+		if(newSegmentVersion % mergeFactor == 0 && mergeLevel <= maxMergeLevel) {
 			//merge starting from segment newSegmentVesrion
-			writer.mergeIndexData(index, newSegmentVesrion);
+			writer.mergeIndexData(newSegmentVersion, mergeLevel);
 			//then recurse again
-			ensure(newSegmentVesrion);
+			ensure(newSegmentVersion, mergeLevel + 1);
 		}
 	}
 	
@@ -109,5 +108,8 @@ public class MergePolicy {
 	
 	public Integer getMergeFactor() {
 		return (Integer) index.getMetadata().get("mergeFactor");
+	}
+	public Integer getMaxMergeLevel() {
+		return (Integer) index.getMetadata().get("maxMergeLevel");
 	}
 }

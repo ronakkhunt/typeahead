@@ -69,7 +69,6 @@ public class Index {
 		
 		metadata = new HashMap<String, Object>();
 		metadata.put("maxMergeLevel", 3);
-//		metadata.put("currentDocumentNumber", Long.valueOf("1"));
 		metadata.put("mergeFactor", 10);
 		metadata.put("version", 1);
 		

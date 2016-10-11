@@ -1,6 +1,7 @@
 package com.typeahead.merge;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +10,6 @@ import com.typeahead.config.IndexConfig;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Document;
-import com.typeahead.index.Index;
 import com.typeahead.reader.IndexReader;
 import com.typeahead.util.TestSet;
 import com.typeahead.util.TestUtil;
@@ -40,14 +40,15 @@ public class MergePolicyTest {
 		
 		TestSet testSet = TestUtil.getTestSet(1);
 		
+		List<Document> testDocuments = testSet.getDocuments();
+		testDocuments.addAll(TestUtil.getTestDocuments());
+		
 		//Loading test data
-		for(Document d: testSet.getDocuments()) {
+		for(Document d: testDocuments) {
 			writer.addDocument(d);
 		}
 		
-		Assert.assertEquals(2, writer.getIndexConfig().getIndex().getVersion());
-		
-		writer.flushIndex();
+		Assert.assertEquals(4, writer.getIndexConfig().getIndex().getVersion());
 		
 		//Cleaning the test index.
 		try {

@@ -100,6 +100,7 @@ public class IndexWriter {
 		Map<String, Document> dataMap = index.getDataMap();
 		
 		//deleting data from data map
+		//if documentId does not exist in the Map, then it will return null.
 		Document document = dataMap.remove(documentId);
 		
 		if( document != null) {
@@ -119,7 +120,7 @@ public class IndexWriter {
 		Index index = indexConfig.getIndex();
 		
 		Map<String, Document> dataMap = index.getDataMap();
-		Map<String, Document> inMemoryDataMap = index.getDataMap();
+		Map<String, Document> inMemoryDataMap = index.getInMemoryDataMap();
 		
 		//setting global document sequence number to document being added.
 		Long documentSequenceNumber = index.getDocumentSequenceNumber();
@@ -168,28 +169,26 @@ public class IndexWriter {
 		writerService.write(docFile, document);
 	}
 	
-	/**
-	 * Used before closing the index, to write remaining data onto files.
-	 * It will use last version + 1 to create last segment
-	 */
-	public void flushIndex() {
-		flushIndex(indexConfig.getIndex().getVersion() + 1);
-	}
 	
 	/**
 	 * Flushes/Writes data onto disk, creating file with given version.
 	 * @param newSegmentVersion
 	 */
-	public void flushIndex(int newSegmentVersion) {
+	public void flushIndex(int newSegmentVersion, int mergeLevel) {
 		indexConfig.getIndex().setVersion(newSegmentVersion);
-		writeIndex();
+		writeIndex(mergeLevel);
 		cleanDataMapDocumentFiles();
 	}
-	
+	/**
+	 * Writes index assuming mergeLevel 1.
+	 */
 	public void writeIndex() {
+		writeIndex(1);
+	}
+	public void writeIndex(int mergeLevel) {
 		Index index = indexConfig.getIndex();
 		
-		File indexDataMap = writerUtil.getDataMapFile();
+		File indexDataMap = writerUtil.getDataMapFile(mergeLevel);
 		File fieldFSTMap = writerUtil.getFieldFSTMapFile();
 		File mapping = writerUtil.getMappingFile();
 		File metadata = writerUtil.getMetadataFile();
@@ -224,13 +223,14 @@ public class IndexWriter {
 
 	/**
 	 * Merge all types of segments related to {@link Index} like <br>
-	 * {@link Index#getDataMap()}, {@link Index#getDataMap()}, {@link Index#getMapping()} etc.
+	 * {@link Index#getDataMap()}, {@link Index#getMapping()} etc.
 	 * @param index
 	 * @param startSegmentNumber
+	 * @param mergeLevel 
 	 */
-	public void mergeIndexData(Index index, int startSegmentNumber) {
+	public void mergeIndexData(int startSegmentNumber, int mergeLevel) {
 		int mergeFactor = mergePolicy.getMergeFactor();
-		mergeDataMapFile(index, startSegmentNumber, mergeFactor);
+		mergeDataMapFile(startSegmentNumber, mergeFactor, mergeLevel);
 //		for(int i = 0; i < mergeFactor; i++) {
 //			read file segment with version startSegmentNumber and put all data in single object like HashMap
 			
@@ -243,9 +243,10 @@ public class IndexWriter {
 	 * @param index
 	 * @param startSegmentNumber
 	 * @param mergeFactor
+	 * @param mergeLevel 
 	 */
 	@SuppressWarnings("unchecked")
-	private void mergeDataMapFile(Index index, int startSegmentNumber, int mergeFactor) {
+	private void mergeDataMapFile(int startSegmentNumber, int mergeFactor, int mergeLevel) {
 		int temp = startSegmentNumber;
 
 		IndexReaderService readerService = new IndexReaderService();
@@ -253,18 +254,23 @@ public class IndexWriter {
 		Map<String, Document> mergedMap = new HashMap<String, Document>();
 		
 		for(int i = 0; i < mergeFactor; i++) {
-			File indexDataMap = writerUtil.getDataMapFile(startSegmentNumber);
+			File indexDataMap = writerUtil.getDataMapFile(startSegmentNumber, mergeLevel);
 			mergedMap.putAll( readerService.read(indexDataMap, HashMap.class) );
 			
-			//Once segment is merged, removing that segment from directory.
-			//TODO: However this operation can be skipped to save time.
-			FileUtil.deleteDirectoryRecursively(indexDataMap);
+			/**
+			 * TODO: However this operation can be skipped to save time.
+			 * 
+			 * Once segment is merged, removing that segment directory.
+			 * `indexDataMap` above points to the segment file, indexDataMap.getParentFile()
+			 * therefore will return the segment directory containing this file.
+			 */
+			FileUtil.deleteDirectoryRecursively(indexDataMap.getParentFile());
 			startSegmentNumber--;
 		}
 		
 		int newSegmentVersion =  temp / mergeFactor;
 		
-		File mergedSegmentFile = writerUtil.getDataMapFile(newSegmentVersion);
+		File mergedSegmentFile = writerUtil.getDataMapFile(newSegmentVersion, mergeLevel + 1);
 		writerService.write(mergedSegmentFile, mergedMap);
 		
 	}
@@ -278,8 +284,13 @@ public class IndexWriter {
 	 * 
 	 */
 	private void cleanDataMapDocumentFiles() {
-		FileUtil.getAllFilesEndingWith(indexConfig.getIndex().getIndexDirectoryPath(),
+		
+		File[] files = FileUtil.getAllFilesEndingWith(indexConfig.getIndex().getIndexDirectoryPath(),
 				FileExtension.DATA_MAP_DOCUMENT.getExtension());
+		
+		for(File file: files) {
+			file.delete();
+		}
 	}
 	
 	public IndexConfig getIndexConfig() {

@@ -72,10 +72,11 @@ public class IndexWriterUtil {
 		//TODO: Not sure about whether to create file here. As of now ObjectMapper of jackson
 		//      taking care of exitance of file.
 		List<File> filesList = new ArrayList<File>();
-		filesList.add(getDataMapFile());
-		filesList.add(getFieldFSTMapFile());
-		filesList.add(getMappingFile());
-		filesList.add(getMetadataFile());
+		//TODO: commented out. in future it can be removed.
+//		filesList.add(getDataMapFile());
+//		filesList.add(getFieldFSTMapFile());
+//		filesList.add(getMappingFile());
+//		filesList.add(getMetadataFile());
 		
 		for(File f: filesList){
 			f.createNewFile();
@@ -112,23 +113,39 @@ public class IndexWriterUtil {
 	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#dataMap}
 	 * @return
 	 */
-	public File getDataMapFile() {
+	public File getDataMapFile(int mergeLevel) {
 		int version = (Integer)index.getMetadata().get("version");
-		return getDataMapFile(version);
+		return getDataMapFile(version, mergeLevel);
 	}
 	
 	/**
 	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#dataMap}
+	 * Here, each segment is directory. so before returning the file object need to create directory<br>
+	 * with segment name.
 	 * @param version
 	 * @return
 	 */
-	public File getDataMapFile(int version) {
-		String fileName = "/dataMap_" + version + FileExtension.DATA_MAP.getExtension();
-		return getFile(index.getIndexDirectoryPath(), fileName);
+	public File getDataMapFile(int version, int mergeLevel) {
+		String fileName = "/dataMap"+ FileExtension.DATA_MAP.getExtension();
+		//name of the segment is `{mergeLevel}.{version}`
+		String directoryPath = index.getIndexDirectoryPath() + "/" + mergeLevel + "." + version;
+		createSegmentDirectory(directoryPath);
+		return getFile(directoryPath, fileName);
 	}
-	
+
+	/**
+	 * Creates segment directory for each segment.
+	 * @param directoryPath
+	 */
+	private void createSegmentDirectory(String directoryPath) {
+		File segmentDirectory = new File(directoryPath);
+		if(!segmentDirectory.exists())
+			segmentDirectory.mkdir();
+	}
+
 	/**
 	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#fieldFSTMap}
+	 * @param mergeLevel 
 	 * @param index
 	 * @return
 	 */
@@ -139,6 +156,7 @@ public class IndexWriterUtil {
 	
 	/**
 	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#mapping}
+	 * @param mergeLevel 
 	 * @param index
 	 * @return
 	 */
@@ -149,6 +167,7 @@ public class IndexWriterUtil {
 
 	/**
 	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#metadata}
+	 * @param mergeLevel 
 	 * @param index
 	 * @return
 	 */
