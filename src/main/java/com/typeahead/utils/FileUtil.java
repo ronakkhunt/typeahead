@@ -2,6 +2,8 @@ package com.typeahead.utils;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.List;
 /**
  * Helper class for Files and Directories 
  * @author ronakkhunt
@@ -25,6 +27,21 @@ public class FileUtil {
 			}
 		}
 		rootFile.delete();
+	}
+	/**
+	 * Returns an array of {@link File} objects of Directories in given path.
+	 * @param path
+	 * @return
+	 */
+	public static File[] getAllDirectories(String path) {
+		File rootDirectory = new File(path);
+		List<File> returnList = new ArrayList<File>();
+		for(File file: rootDirectory.listFiles()) {
+			if(file.isDirectory())
+				returnList.add(file);
+		}
+		
+		return returnList.toArray(new File[]{});
 	}
 	
 	/**

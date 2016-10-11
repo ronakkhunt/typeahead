@@ -124,11 +124,14 @@ public class IndexReader {
 		Map<String, Document> dataMap = new HashMap<String, Document>();
 		
 		//Reading all segment with FileExtension.DATA_MAP
-		File[] dataMapFiles = FileUtil.getAllFilesEndingWith(index.getIndexDirectoryPath(), 
-				FileExtension.DATA_MAP.getExtension());
+		File[] segmentDirectories = FileUtil.getAllDirectories(index.getIndexDirectoryPath());
 		
-		for(File f: dataMapFiles) {
-			dataMap.putAll(readerService.read(f, HashMap.class));
+		for(File f: segmentDirectories) {
+			
+			File segmentFile = new File(f.getAbsolutePath() + 
+					"/dataMap"+FileExtension.DATA_MAP.getExtension());
+			
+			dataMap.putAll(readerService.read(segmentFile, HashMap.class));
 		}
 		
 		//Reading Individual all document file(s).
