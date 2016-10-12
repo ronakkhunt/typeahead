@@ -52,7 +52,7 @@ public class MergePolicy {
 	 * @param totalDocumentCount
 	 * @param searchDocumentSequenceNumber
 	 */
-	public static String getSegmentNumber(int maxLevel, int mergeFactor, int totalDocumentCount, int searchDocumentSequenceNumber) {
+	public static String getSegmentNumber(int maxLevel, int mergeFactor, int totalDocumentCount, Long searchDocumentSequenceNumber) {
 		
 		 // To search based on 0-based index, removing 1 from the value.
 		searchDocumentSequenceNumber--;

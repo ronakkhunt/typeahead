@@ -58,15 +58,15 @@ public class MergePolicyTest {
 	
 	@Test
 	public void getSegmentNumberTest() {
-		Assert.assertEquals("2.5", MergePolicy.getSegmentNumber(3, 10, 530, 475));
-		Assert.assertEquals(null, MergePolicy.getSegmentNumber(3, 10, 528, 523));
+		Assert.assertEquals("2.5", MergePolicy.getSegmentNumber(3, 10, 530, (long) 475));
+		Assert.assertEquals(null, MergePolicy.getSegmentNumber(3, 10, 528, (long) 523));
 		
-		Assert.assertEquals("3.1", MergePolicy.getSegmentNumber(3, 10, 1000, 1000));
-		Assert.assertEquals(null, MergePolicy.getSegmentNumber(3, 11, 1000, 1000));
+		Assert.assertEquals("3.1", MergePolicy.getSegmentNumber(3, 10, 1000, (long) 1000));
+		Assert.assertEquals(null, MergePolicy.getSegmentNumber(3, 11, 1000, (long) 1000));
 		
-		Assert.assertEquals("3.1", MergePolicy.getSegmentNumber(4, 10, 2412, 145));
+		Assert.assertEquals("3.1", MergePolicy.getSegmentNumber(4, 10, 2412, (long) 145));
 		
-		Assert.assertEquals("4.7", MergePolicy.getSegmentNumber(4, 10, 190320, 65535));
-		Assert.assertEquals("1.2", MergePolicy.getSegmentNumber(4, 10, 190320, 190320-1));
+		Assert.assertEquals("4.7", MergePolicy.getSegmentNumber(4, 10, 190320, (long) 65535));
+		Assert.assertEquals("1.2", MergePolicy.getSegmentNumber(4, 10, 190320, (long) (190320-1)));
 	}
 }

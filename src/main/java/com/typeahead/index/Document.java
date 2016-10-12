@@ -9,9 +9,13 @@ import java.util.Map;
  */
 public class Document {
 	
+	/**
+	 * It is a map of OGNLs in any entity to be indexed.
+	 */
 	Map<String, String> entity;
 	String id;
 	Long sequenceId;
+	boolean isDeleted = false;
 
 	public Document() {
 		entity = new HashMap<String, String>();
@@ -44,7 +48,11 @@ public class Document {
 	public String getId() {
 		return id;
 	}
-
+	
+	public void setId(String id) {
+		this.id = id;
+	}
+	
 	public Map<String, String> getEntity() {
 		return entity;
 	}
@@ -53,16 +61,12 @@ public class Document {
 		this.entity = entity;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public boolean isDeleted() {
+		return isDeleted;
 	}
-	public static void main(String[] args) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		
-		map.put("2", Long.valueOf("1"));
-		
-		int a = (Integer)map.get("2");
-		
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 	
 }

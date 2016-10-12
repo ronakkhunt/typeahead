@@ -111,6 +111,15 @@ public class Index {
 	}
 	
 	/**
+	 * Returns total numbers of document in the {@link Index}.
+	 * @return
+	 */
+	public int getTotalDocumentCount() {
+		return dataMap.size();
+	}
+	
+	
+	/**
 	 * This method return the string, which is used as first level key in FST maps of each field.
 	 * @return
 	 */

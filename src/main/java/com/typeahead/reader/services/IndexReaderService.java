@@ -1,7 +1,11 @@
 package com.typeahead.reader.services;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.CharBuffer;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -38,4 +42,15 @@ public class IndexReaderService {
 		return null;
 	}
 	
+	public String read(File file) throws FileNotFoundException {
+		FileReader reader = new FileReader(file);
+		BufferedReader bReader = new BufferedReader(reader);
+		try {
+			return bReader.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

@@ -1,7 +1,10 @@
 package com.typeahead.writer;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +12,7 @@ import com.typeahead.async.AsyncTaskExecutor;
 import com.typeahead.async.FlushDocumentAsync;
 import com.typeahead.config.IndexConfig;
 import com.typeahead.constants.FileExtension;
+import com.typeahead.constants.FileName;
 import com.typeahead.exceptions.DocumentAlreadyExistException;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
@@ -91,8 +95,9 @@ public class IndexWriter {
 	/**
 	 * Method to remove any {@link Document} from {@link Index}.
 	 * @param documentId
+	 * @throws IOException 
 	 */
-	public void deleteDocument(String documentId) {
+	public void deleteDocument(String documentId) throws IOException {
 		IndexDeleteService indexDeleteService = new IndexDeleteService();
 		
 		Index index = indexConfig.getIndex();
@@ -104,7 +109,11 @@ public class IndexWriter {
 		Document document = dataMap.remove(documentId);
 		
 		if( document != null) {
+			//delete in-memory document.
 			indexDeleteService.deleteDocument(index, document, documentId);
+			
+			//Mark document deleted in segment.
+			markDocumentDeleted(document);
 		}
 	}
 	
@@ -157,6 +166,42 @@ public class IndexWriter {
 		}
 	}
 	
+	/**
+	 * Marks the document as deleted. 
+	 * It also requires to write the {@link Document#getId()} into {@link FileName#DATA_MAP_DELETE}<br>
+	 * file. it will append the Document#id to the file.
+	 * <br>
+	 * This file {@link FileName#DATA_MAP_DELETE} is located inside the segment directory of segment<br>
+	 * in which given document lie.
+	 * @param document
+	 * @throws IOException
+	 */
+	public void markDocumentDeleted(Document document) throws IOException {
+		Index index = indexConfig.getIndex();
+		
+		//Set the deleted flag true.
+		document.setDeleted(true);
+		
+		//get segment number from Document sequenceID.
+		String segmentIdString = MergePolicy.getSegmentNumber(mergePolicy.getMaxMergeLevel(), mergePolicy.getMergeFactor(),
+				index.getTotalDocumentCount(), document.getSequenceId());
+		
+		//get file object pointing .del file
+		String fileName = index.getIndexDirectoryPath() + "/" + segmentIdString + 
+				"/" + FileName.DATA_MAP_DELETE.getName();
+		
+		File file = new File(fileName);
+		
+		//check if file exist.
+		if(!file.exists()) {
+			//if file does not exits, create new file.
+			file.createNewFile();
+		}
+		
+		//append documentId to the file.
+		writerService.append(file, document.getId() + ",");
+	}
+	
 	
 	/**
 	 * Writes given {@link Document} onto the disk with {@link FileExtension#DATA_MAP_DOCUMENT} extension.
@@ -180,7 +225,7 @@ public class IndexWriter {
 		cleanDataMapDocumentFiles();
 	}
 	/**
-	 * Writes index assuming mergeLevel 1.
+	 * Writes an index assuming mergeLevel=1.
 	 */
 	public void writeIndex() {
 		writeIndex(1);
