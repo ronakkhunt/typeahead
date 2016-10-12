@@ -1,12 +1,15 @@
 package com.typeahead.reader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.typeahead.config.IndexConfig;
 import com.typeahead.constants.FileExtension;
+import com.typeahead.constants.FileName;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Document;
@@ -35,9 +38,10 @@ public class IndexReader {
 	 * @param indexName
 	 * @return
 	 * @throws IndexDoesNotExistException 
+	 * @throws FileNotFoundException 
 	 */
 	@SuppressWarnings("unchecked")
-	public IndexReader openIndex() throws IndexDoesNotExistException {
+	public IndexReader openIndex() throws IndexDoesNotExistException, FileNotFoundException {
 		Index index = indexConfig.getIndex();
 		IndexWriterUtil writerUtil = new IndexWriterUtil(index);
 		
@@ -118,9 +122,10 @@ public class IndexReader {
 	 * All these file are ending with extension {@link FileExtension#DATA_MAP}
 	 * @param index
 	 * @param writerUtil
+	 * @throws FileNotFoundException 
 	 */
 	@SuppressWarnings("unchecked")
-	private void _readDataMapFile(Index index, IndexWriterUtil writerUtil) {
+	private void _readDataMapFile(Index index, IndexWriterUtil writerUtil) throws FileNotFoundException {
 		Map<String, Document> dataMap = new HashMap<String, Document>();
 		
 		//Reading all segment with FileExtension.DATA_MAP
@@ -130,8 +135,15 @@ public class IndexReader {
 			
 			File segmentFile = new File(f.getAbsolutePath() + 
 					"/dataMap"+FileExtension.DATA_MAP.getExtension());
-			
+			//read segment file
 			dataMap.putAll(readerService.read(segmentFile, HashMap.class));
+			
+			//read the FileName#DELETE_INDEX file. and remove all the IDs 
+			//from the dataMap.
+			String[]IDs = getDeletedDocumentIDsFromSegment(f);
+			for(String id: IDs) {
+				dataMap.remove(id);
+			}
 		}
 		
 		//Reading Individual all document file(s).
@@ -144,6 +156,13 @@ public class IndexReader {
 		}
 		
 		index.setDataMap(dataMap);
+	}
+	
+	private String[] getDeletedDocumentIDsFromSegment(File f) throws FileNotFoundException {
+		File dataMapDelFile = new File(f.getAbsolutePath() + "/" + FileName.DATA_MAP_DELETE.getName());
+		String commaSeparatedIDs = readerService.read(dataMapDelFile);
+		
+		return commaSeparatedIDs.split(",");
 	}
 	
 	public void setMergeFactor(int value) {
