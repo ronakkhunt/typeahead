@@ -1,5 +1,6 @@
 package com.typeahead.writer;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -9,14 +10,94 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.typeahead.config.IndexConfig;
+import com.typeahead.constants.FileName;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Document;
+import com.typeahead.index.Index;
+import com.typeahead.merge.MergePolicy;
 import com.typeahead.reader.IndexReader;
 import com.typeahead.util.TestSet;
 import com.typeahead.util.TestUtil;
 
 public class IndexWriterTest {
+	
+	@Test
+	public void deleteDocumentTest() throws IndexAlreadyExistException, IOException, IndexDoesNotExistException {
+		String indexName = "_delete_doc_test";
+		
+		IndexConfig config = new IndexConfig(indexName);
+		IndexWriter writer = new IndexWriter(config);
+		Index index = config.getIndex();
+		config.getIndex().setMergeFactor(3);
+		
+		IndexWriterUtil writerUtil = new IndexWriterUtil(config.getIndex());
+		
+		//deleting the Index
+		try {
+			writer.deleteIndex();
+		} catch (IndexDoesNotExistException e) {}
+		
+		writer.createIndex();
+		
+		TestSet testSet = TestUtil.getTestSet(1);
+		
+		//this test set contains total 8 Documents.
+		List<Document> testList = testSet.getDocuments();
+		
+		for(Document doc: testList) {
+			writer.addDocument(doc);
+		}
+		
+		//Test 1: deleting un-merged document.
+		
+		//getting last document for test.
+		Document testDoc = testList.get(7);
+		
+		writer.deleteDocument(testDoc.getId());
+		
+		File delDocFile = writerUtil.getDocumentFile(testDoc.getId());
+		
+		//deleted document file should not be on disk.
+		Assert.assertEquals(delDocFile.exists(), false);
+		
+		//Test 2: 
+		
+		//getting 2nd document which is merged already, for test.
+		testDoc = testList.get(1);
+		
+		writer.deleteDocument(testDoc.getId());
+		
+		String segmentIdString = MergePolicy.getSegmentNumber(writer.getMergePolicy().getMaxMergeLevel(),
+				writer.getMergePolicy().getMergeFactor(), 
+				index.getTotalDocumentCount(), 
+				testDoc.getSequenceId());
+		
+		String fileName = index.getIndexDirectoryPath() + "/" + segmentIdString + 
+				"/" + FileName.DATA_MAP_DELETE.getName();
+		
+		File file = new File(fileName);
+		Assert.assertEquals(file.exists(), true);
+		
+		//creating new Index.
+		config = new IndexConfig(indexName);
+		IndexReader reader = new IndexReader(config);
+		writer = new IndexWriter(config);
+		
+		//opening the same Index again.
+		reader.openIndex();
+		
+		//NOTE: This is a test which is more suitable to IndexReader#openIndex(), but to test
+		//completed flow of IndexWriter#deleteDocument(), it is being included here.
+		Assert.assertEquals(config.getIndex().getDataMap().get(testDoc.getId()), null);
+		
+		//deleting the Index
+		try {
+			writer.deleteIndex();
+		} catch (IndexDoesNotExistException e) {}
+		
+	}
+	
 	
 	@Test
 	public void createIndexTest() throws IndexDoesNotExistException, IOException {

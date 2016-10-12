@@ -1,5 +1,6 @@
 package com.typeahead.reader;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Assert;
@@ -91,7 +92,7 @@ public class IndexReaderTest {
 	}
 	
 	@Test
-	public void openIndexTest() {
+	public void openIndexTest() throws FileNotFoundException {
 		String indexName = "_open_test";
 		IndexConfig config = new IndexConfig(indexName);
 		IndexReader reader = new IndexReader(config);

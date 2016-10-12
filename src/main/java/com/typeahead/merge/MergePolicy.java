@@ -46,7 +46,7 @@ public class MergePolicy {
 	
 	/**
 	 * Returns segment number, in which the given search {@link Document} is lying at current Situation.<br>
-	 * Returns null if {@link Document} is not merged yet. 
+	 * Returns {@link null} if {@link Document} is not merged yet. 
 	 * @param maxLevel
 	 * @param mergeFactor
 	 * @param totalDocumentCount

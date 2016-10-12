@@ -158,11 +158,22 @@ public class IndexReader {
 		index.setDataMap(dataMap);
 	}
 	
+	/**
+	 * Read the FileName#DATA_MAP_DELETE file from given segment directory and return an array<br>
+	 * {@link String} containing IDs of deleted documents.
+	 * @param f
+	 * @return
+	 * @throws FileNotFoundException
+	 */
 	private String[] getDeletedDocumentIDsFromSegment(File f) throws FileNotFoundException {
 		File dataMapDelFile = new File(f.getAbsolutePath() + "/" + FileName.DATA_MAP_DELETE.getName());
-		String commaSeparatedIDs = readerService.read(dataMapDelFile);
 		
-		return commaSeparatedIDs.split(",");
+		//read above mentioned file only if it exist.
+		if(dataMapDelFile.exists()){
+			String commaSeparatedIDs = readerService.read(dataMapDelFile);
+			return commaSeparatedIDs.split(",");
+		}
+		return new String[0];
 	}
 	
 	public void setMergeFactor(int value) {

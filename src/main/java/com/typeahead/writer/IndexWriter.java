@@ -176,7 +176,7 @@ public class IndexWriter {
 	 * @param document
 	 * @throws IOException
 	 */
-	public void markDocumentDeleted(Document document) throws IOException {
+	private void markDocumentDeleted(Document document) throws IOException {
 		Index index = indexConfig.getIndex();
 		
 		//Set the deleted flag true.
@@ -186,20 +186,30 @@ public class IndexWriter {
 		String segmentIdString = MergePolicy.getSegmentNumber(mergePolicy.getMaxMergeLevel(), mergePolicy.getMergeFactor(),
 				index.getTotalDocumentCount(), document.getSequenceId());
 		
-		//get file object pointing .del file
-		String fileName = index.getIndexDirectoryPath() + "/" + segmentIdString + 
-				"/" + FileName.DATA_MAP_DELETE.getName();
-		
-		File file = new File(fileName);
-		
-		//check if file exist.
-		if(!file.exists()) {
-			//if file does not exits, create new file.
-			file.createNewFile();
+		//if segmentIdString is null then document is not merged yet.
+		if(segmentIdString == null) {
+			//if document is not merged yet, then we need to remove file created by 
+			//IndexWriter#flushDocument()
+			File docFile = writerUtil.getDocumentFile(document.getId());
+			docFile.delete();
+		}else{
+			//get file object pointing .del file
+			String fileName = index.getIndexDirectoryPath() + "/" + segmentIdString + 
+					"/" + FileName.DATA_MAP_DELETE.getName();
+			
+			File file = new File(fileName);
+			
+			//check if file exist.
+			if(!file.exists()) {
+				//if file does not exits, create new file.
+				file.createNewFile();
+			}
+			
+			//append documentId to the file.
+			writerService.append(file, document.getId() + ",");
 		}
 		
-		//append documentId to the file.
-		writerService.append(file, document.getId() + ",");
+		
 	}
 	
 	
