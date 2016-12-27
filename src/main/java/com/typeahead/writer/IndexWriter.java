@@ -1,15 +1,10 @@
 package com.typeahead.writer;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.typeahead.async.AsyncTaskExecutor;
-import com.typeahead.async.FlushDocumentAsync;
 import com.typeahead.config.IndexConfig;
 import com.typeahead.constants.FileExtension;
 import com.typeahead.constants.FileName;
