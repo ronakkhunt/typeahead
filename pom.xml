@@ -4,9 +4,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.typeahead</groupId>
+  <groupId>com.github.ronakkhunt</groupId>
   <artifactId>type-ahead</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2</version>
   <packaging>jar</packaging>
   
   <name>${project.groupId}:${project.artifactId}</name>
@@ -48,75 +48,80 @@
 	    <version>4.12</version>
 	</dependency>
   </dependencies>
-  
-  	<build>
-  		<plugins>
-	  		<plugin>
-	           <groupId>org.apache.maven.plugins</groupId>
-	           <artifactId>maven-gpg-plugin</artifactId>
-	           <version>1.5</version>
-	           <executions>
-	               <execution>
-	                   <id>sign-artifacts</id>
-	                   <phase>verify</phase>
-	                   <goals>
-	                       <goal>sign</goal>
-	                   </goals>
-	               </execution>
-	           </executions>
-	       </plugin>
-	    	<plugin>
-			  <groupId>org.sonatype.plugins</groupId>
-			  <artifactId>nexus-staging-maven-plugin</artifactId>
-			  <version>1.6.7</version>
-			  <extensions>true</extensions>
-			  <configuration>
-			     <serverId>ossrh</serverId>
-			     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-			     <autoReleaseAfterClose>true</autoReleaseAfterClose>
-			  </configuration>
-			</plugin>
-	        <plugin>
-	          <groupId>org.sonatype.plugins</groupId>
-	          <artifactId>nexus-staging-maven-plugin</artifactId>
-	          <version>1.6.7</version>
-	          <extensions>true</extensions>
-	          <configuration>
-	              <serverId>ossrh</serverId>
-	              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-	              <stagingProfileId>19375019933d12</stagingProfileId>
-	              <autoReleaseAfterClose>true</autoReleaseAfterClose>
-	          </configuration>
-	       </plugin>
-	        <plugin>
-	           <groupId>org.apache.maven.plugins</groupId>
-	           <artifactId>maven-source-plugin</artifactId>
-	           <executions>
-	               <execution>
-	                   <id>attach-sources</id>
-	                   <goals>
-	                       <goal>jar</goal>
-	                   </goals>
-	               </execution>
-	           </executions>
-	       </plugin>
-		    <plugin>
-	           <groupId>org.apache.maven.plugins</groupId>
-	           <artifactId>maven-javadoc-plugin</artifactId>
-	           <executions>
-	               <execution>
-	                   <id>attach-javadocs</id>
-	                   <goals>
-	                       <goal>jar</goal>
-	                   </goals>
-	               </execution>
-	           </executions>
-	           <configuration>
-	               <additionalparam>-Xdoclint:none</additionalparam>
-	           </configuration>
-	       </plugin>
-	  	</plugins>
-	</build>
+  	
+  	<profiles>
+	  	<profile> 
+		    <id>release</id>
+		  	<build>
+		  		<plugins>
+			  		<plugin>
+			           <groupId>org.apache.maven.plugins</groupId>
+			           <artifactId>maven-gpg-plugin</artifactId>
+			           <version>1.5</version>
+			           <executions>
+			               <execution>
+			                   <id>sign-artifacts</id>
+			                   <phase>verify</phase>
+			                   <goals>
+			                       <goal>sign</goal>
+			                   </goals>
+			               </execution>
+			           </executions>
+			       </plugin>
+			    	<plugin>
+					  <groupId>org.sonatype.plugins</groupId>
+					  <artifactId>nexus-staging-maven-plugin</artifactId>
+					  <version>1.6.7</version>
+					  <extensions>true</extensions>
+					  <configuration>
+					     <serverId>ossrh</serverId>
+					     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					     <autoReleaseAfterClose>true</autoReleaseAfterClose>
+					  </configuration>
+					</plugin>
+			        <plugin>
+			          <groupId>org.sonatype.plugins</groupId>
+			          <artifactId>nexus-staging-maven-plugin</artifactId>
+			          <version>1.6.7</version>
+			          <extensions>true</extensions>
+			          <configuration>
+			              <serverId>ossrh</serverId>
+			              <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+			              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+			          </configuration>
+			       </plugin>
+			        <plugin>
+			           <groupId>org.apache.maven.plugins</groupId>
+			           <artifactId>maven-source-plugin</artifactId>
+			           <executions>
+			               <execution>
+			                   <id>attach-sources</id>
+			                   <goals>
+			                       <goal>jar</goal>
+			                   </goals>
+			               </execution>
+			           </executions>
+			       </plugin>
+				    <plugin>
+			           <groupId>org.apache.maven.plugins</groupId>
+			           <artifactId>maven-javadoc-plugin</artifactId>
+			           <executions>
+			               <execution>
+			                   <id>attach-javadocs</id>
+			                   <goals>
+			                       <goal>jar</goal>
+			                   </goals>
+			               </execution>
+			           </executions>
+			           <configuration>
+			               <additionalparam>-Xdoclint:none</additionalparam>
+			           </configuration>
+			       </plugin>
+			  	</plugins>
+			</build>
+		</profile>
+	</profiles> 
+    
 	 <distributionManagement>
 		 <snapshotRepository>
 		   <id>ossrh</id>
