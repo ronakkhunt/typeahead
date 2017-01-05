@@ -8,7 +8,7 @@ import com.typeahead.index.Index;
  *
  */
 public class IndexConfig {
-	Index index;
+	private Index index;
 	
 	public IndexConfig(String indexName) {
 		index = new Index(indexName);

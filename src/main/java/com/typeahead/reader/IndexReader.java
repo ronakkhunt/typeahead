@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.typeahead.config.IndexConfig;
@@ -26,8 +25,9 @@ import com.typeahead.writer.IndexWriterUtil;
  */
 public class IndexReader {
 	
-	IndexReaderService readerService;
-	IndexConfig indexConfig;
+	private IndexReaderService readerService;
+	private IndexConfig indexConfig;
+	
 	public IndexReader(IndexConfig config) {
 		readerService = new IndexReaderService();
 		indexConfig = config;

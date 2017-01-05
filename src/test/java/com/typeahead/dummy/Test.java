@@ -1,11 +1,8 @@
 package com.typeahead.dummy;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -34,6 +31,7 @@ public class Test {
 			while( (line = br.readLine()) != null){
 				System.out.println(line);
 			}
+			br.close();
 			
 		}catch(Exception e){
 			
@@ -67,7 +65,7 @@ public class Test {
 	        
 	        ois.close();
 	        fis.close();
-	        
+	        raf.close();
 	        
 
         } catch (Exception e) {
@@ -137,6 +135,7 @@ public class Test {
 			//map = (Map<Integer, Integer>) objectIn.readObject();
 			System.out.println("time taken:" + (System.currentTimeMillis() - startTime));
 			objectIn.close();
+			raf.close();
 		}catch(Exception e){
 			e.printStackTrace();
 		}

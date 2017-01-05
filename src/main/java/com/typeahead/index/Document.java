@@ -12,10 +12,10 @@ public class Document {
 	/**
 	 * It is a map of OGNLs in any entity to be indexed.
 	 */
-	Map<String, String> entity;
-	String id;
-	Long sequenceId;
-	boolean isDeleted = false;
+	private Map<String, String> entity;
+	private String id;
+	private Long sequenceId;
+	private boolean isDeleted = false;
 
 	public Document() {
 		entity = new HashMap<String, String>();

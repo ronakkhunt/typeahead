@@ -14,29 +14,29 @@ import com.typeahead.writer.IndexWriter;
  */
 public class Index {
 	
-	String name;
+	private String name;
 	
 	/**
 	 * Global sequence for {@link Document}.
 	 */
-	Long currentDocumentNumber;
+	private Long currentDocumentNumber;
 	
 	
 	/**
 	 * Map to store metadata about the files stored on the Disk
 	 */
-	Map<String, Object> metadata;
+	private Map<String, Object> metadata;
 	
 	/**
 	 * Base Path to store all the index data.
 	 */
-	String dataDirectory;
+	private String dataDirectory;
 	
 	/**
 	 * FST Search map for each mapped field as per {@link Index#mapping}
 	 * <b>Key</b> here is name of field (ognl) and <b>Value</b> is FST map for that field.
 	 */
-	Map<String, Map<String, Map<Character, IndexState>>> fieldFSTMap;
+	private Map<String, Map<String, Map<Character, IndexState>>> fieldFSTMap;
 	
 	/**
 	 * key-value pair of indexed data.<br>
@@ -44,20 +44,20 @@ public class Index {
 	 * <b>Value</b> is {@link Document} itself.
 	 * 
 	 */
-	Map<String, Document> dataMap;
+	private Map<String, Document> dataMap;
 	
 	/**
 	 * Temporary map which store document, which has not been flushed onto the disk, <br>
 	 * however it has been written onto disk by {@link IndexWriter#flushDocument()}
 	 */
-	Map<String, Document> inMemoryDataMap;
+	private Map<String, Document> inMemoryDataMap;
 	
 	/**
 	 * key-value pair to specify field to be searched.
 	 * <b>Key</b> is name of the field.
 	 * <b>Value</b> is of no use as of now.
 	 */
-	Map<String, String> mapping;
+	private Map<String, String> mapping;
 	
 	public Index(String name){
 		
