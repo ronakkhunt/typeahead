@@ -206,7 +206,32 @@ public class Index {
 		return mapping;
 	}
 	
-	public void setMapping(Map<String, String> mapping) {
+	/**
+	 * Add mapping for given field to {@link Index#mapping} Map.
+	 * 
+	 * NOTE: 
+	 * this method accepts mapping for new field(s) only. any field which already exists<br/>
+	 * in the mapping will not be changed.
+	 * @param fieldName
+	 */
+	public void addFieldMapping(String fieldName) {
+		Map<String, String> mapping = this.mapping;
+		if(!mapping.containsKey(fieldName)){
+			this.mapping.put(fieldName, "String");
+			//creating a new FST map for added field
+			fieldFSTMap.put(fieldName, new HashMap<String, Map<Character,IndexState>>());
+		}else{
+			//Ignore the mapping.
+		}
+			
+	}
+		
+	/**
+	 * NOTE: making this method private. as of now. Nobody should be able to set mapping directly.
+	 * 
+	 * @param mapping
+	 */
+	private void setMapping(Map<String, String> mapping) {
 		this.mapping = mapping;
 		
 		for(String field: getMappedField()){

@@ -102,7 +102,7 @@ public class IndexReader {
 	}
 	
 	/**
-	 * Created index using {@link IndexWriter} ans set it in {@link IndexReader}
+	 * Created index using {@link IndexWriter} and set it in {@link IndexReader}
 	 * 
 	 * NOTE: Ideally createIndex() is there in {@link IndexWriter}, but to define<br>
 	 * {@link IndexReader#createOrOpenIndex()} we need to define this private method. 
@@ -180,14 +180,9 @@ public class IndexReader {
 		Index index = indexConfig.getIndex();
 		index.setMergeFactor(value);
 	}
-	
-	public void setMapping(Map<String, String> mapping) {
-		Index index = indexConfig.getIndex();
-		index.setMapping(mapping);
-	}
 
 	public void close() {
-		// TODO Need to implement this method
+		// TODO: Need to implement this method
 		// Idea is this method should releases all the in-memory resources.
 		
 	}

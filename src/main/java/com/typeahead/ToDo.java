@@ -1,9 +1,5 @@
 package com.typeahead;
 
-import com.typeahead.reader.IndexReader;
-import com.typeahead.reader.services.IndexReaderService;
-import com.typeahead.writer.IndexWriter;
-
 /**
  * This class is used to maintain the list of the To-Do task.
  * @author ronakkhunt

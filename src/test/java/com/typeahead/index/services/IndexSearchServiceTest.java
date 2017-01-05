@@ -44,10 +44,8 @@ public class IndexSearchServiceTest {
 			writer.createIndex();
 		} catch (IndexAlreadyExistException e) {}
 		
-		//set mapping
-		Map<String, String> mapping = new HashMap<String, String>();
-		mapping.put("data", "String");
-		reader.setMapping(mapping);
+		//adding search Field
+		config.addSearchField("data");
 	}
 	
 	@Test

@@ -17,4 +17,9 @@ public class IndexConfig {
 	public Index getIndex() {
 		return index;
 	}
+	
+	public IndexConfig addSearchField(String fieldName) {
+		index.addFieldMapping(fieldName);
+		return this;
+	}
 }

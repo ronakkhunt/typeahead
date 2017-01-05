@@ -155,9 +155,8 @@ public class IndexWriterTest {
 		IndexReader reader = new IndexReader(config);
 		IndexWriter writer = new IndexWriter(config);
 		
-		Map<String, String> mapping = new HashMap<String, String>();
-		mapping.put("type", "String");
-		reader.setMapping(mapping);
+		//adding search field
+		config.addSearchField("type");
 		
 		//making sure to delete index
 		try {
