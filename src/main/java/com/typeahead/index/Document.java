@@ -57,7 +57,7 @@ public class Document {
 		return entity;
 	}
 	
-	public void setEntity(Map<String, String> entity) {
+	private void setEntity(Map<String, String> entity) {
 		this.entity = entity;
 	}
 

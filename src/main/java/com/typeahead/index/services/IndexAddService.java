@@ -26,7 +26,6 @@ public class IndexAddService {
 			String dataToIndex = document.get(field);
 			
 			indexField(index, fieldFSTMap, dataToIndex, output);
-			System.out.println();
 		}
 	}
 	
@@ -56,7 +55,7 @@ public class IndexAddService {
 			String st = state.substring(0, i+1);
 			String nst = state.substring(0, j);
 			
-			if(! fieldFSTMap.containsKey(st) ){
+			if(!fieldFSTMap.containsKey(st) ){
 				Set<String> idSet = new HashSet<String>();
 				idSet.add(output);
 				Map<Character, IndexState> valueMap = new HashMap<Character, IndexState>();
