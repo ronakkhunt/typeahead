@@ -23,6 +23,10 @@ import com.typeahead.merge.MergePolicy;
 import com.typeahead.reader.services.IndexReaderService;
 import com.typeahead.utils.FileUtil;
 import com.typeahead.writer.services.IndexWriterService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
 
 /**
@@ -31,7 +35,8 @@ import com.typeahead.writer.services.IndexWriterService;
  *
  */
 public class IndexWriter {
-	
+
+	Logger logger;
 	/**
 	 * Merge policy, which is used to merge the segment of index.
 	 */
@@ -43,6 +48,7 @@ public class IndexWriter {
 	
 	ObjectMapper mapper;
 	public IndexWriter(IndexConfig config){
+		logger = LoggerFactory.getLogger(getClass());
 		mapper = new ObjectMapper();
 		writerService = new IndexWriterService();
 		indexConfig = config;
@@ -51,7 +57,7 @@ public class IndexWriter {
 	}
 	
 	/**
-	 * Create new {@link Index}. 
+	 * Create new {@link Index}.
 	 * @param indexName
 	 * @return
 	 * @throws IndexAlreadyExistException
@@ -87,7 +93,7 @@ public class IndexWriter {
 	/**
 	 * Delete {@link Index}
 	 * @param indexName
-	 * @throws IndexDoesNotExistException 
+	 * @throws IndexDoesNotExistException
 	 */
 	public void deleteIndex() throws IndexDoesNotExistException {
 		
@@ -280,9 +286,9 @@ public class IndexWriter {
 			 outputMap = mapper.readValue(stringMap, HashMap.class);
 			
 		} catch (JsonProcessingException e) {
-
+			logger.error(e.toString());
 		} catch (IOException e) {
-			
+			logger.error(e.toString());
 		}
 		return outputMap;
 	}
@@ -327,7 +333,6 @@ public class IndexWriter {
 	
 	/**
 	 * Merge segments related to {@link Index#getDataMap()}
-	 * @param index
 	 * @param startSegmentNumber
 	 * @param mergeFactor
 	 * @param mergeLevel 

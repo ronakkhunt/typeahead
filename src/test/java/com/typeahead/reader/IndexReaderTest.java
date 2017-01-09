@@ -1,13 +1,5 @@
 package com.typeahead.reader;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import com.typeahead.config.IndexConfig;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
@@ -17,12 +9,25 @@ import com.typeahead.util.TestSet;
 import com.typeahead.util.TestUtil;
 import com.typeahead.writer.IndexWriter;
 import com.typeahead.writer.IndexWriterUtil;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class IndexReaderTest {
-	
+
+    Logger logger;
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
-	
+
+    IndexReaderTest(){
+        logger = LoggerFactory.getLogger(getClass());
+    }
+
 	/**
 	 * Test mostly related to {@link IndexReader#_readDataMapFile}, <br>
 	 * which then can be extended to test other fields like {@link Index#fieldFSTMap}
@@ -41,7 +46,9 @@ public class IndexReaderTest {
 		//making sure index does not exist already.
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 		
 		writer.createIndex();
 		
@@ -62,7 +69,9 @@ public class IndexReaderTest {
 		//Cleaning the test index.
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 	}
 	
 	@Test
@@ -75,7 +84,9 @@ public class IndexReaderTest {
 		//TEST 1: creating the Index
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 		
 		reader.createOrOpenIndex();
 		
@@ -87,7 +98,9 @@ public class IndexReaderTest {
 		//clean up
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 		
 	}
 	
@@ -109,13 +122,17 @@ public class IndexReaderTest {
 			exception.expect(IndexDoesNotExistException.class);
 		    exception.expectMessage(indexName);
 			Assert.assertTrue(writerUtil.doesIndexExist());
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 		
 		
 		//clean up
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 	}
 	
 }

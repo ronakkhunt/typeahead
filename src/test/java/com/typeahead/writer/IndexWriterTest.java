@@ -1,12 +1,5 @@
 package com.typeahead.writer;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.typeahead.config.IndexConfig;
 import com.typeahead.constants.FileName;
 import com.typeahead.exceptions.IndexAlreadyExistException;
@@ -17,9 +10,22 @@ import com.typeahead.merge.MergePolicy;
 import com.typeahead.reader.IndexReader;
 import com.typeahead.util.TestSet;
 import com.typeahead.util.TestUtil;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class IndexWriterTest {
-	
+
+    Logger logger;
+
+    IndexWriterTest(){
+        logger = LoggerFactory.getLogger(getClass());
+    }
 	@Test
 	public void deleteDocumentTest() throws IndexAlreadyExistException, IOException, IndexDoesNotExistException {
 		String indexName = "_delete_doc_test";
@@ -34,7 +40,9 @@ public class IndexWriterTest {
 		//deleting the Index
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+			logger.error(e.toString());
+		}
 		
 		writer.createIndex();
 		
@@ -92,7 +100,9 @@ public class IndexWriterTest {
 		//deleting the Index
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 		
 	}
 	
@@ -111,7 +121,7 @@ public class IndexWriterTest {
 			writer.createIndex();
 			Assert.assertTrue(writerUtil.doesIndexExist());
 		} catch (IndexAlreadyExistException e) {
-			
+            logger.error(e.toString());
 		}finally{
 			writer.deleteIndex();
 		}
@@ -138,13 +148,15 @@ public class IndexWriterTest {
 		try {
 			writer.createIndex();
 		} catch (IndexAlreadyExistException e) {
-			
+            logger.error(e.toString());
 		}
 		
 		try {
 			writer.deleteIndex();
 			Assert.assertFalse(writerUtil.doesIndexExist());
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 		
 	}
 	
@@ -161,7 +173,9 @@ public class IndexWriterTest {
 		//making sure to delete index
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 		
 		writer.createIndex();
 		TestSet testSet = TestUtil.getTestSet(1);
@@ -181,7 +195,9 @@ public class IndexWriterTest {
 		
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 		
 	}
 }

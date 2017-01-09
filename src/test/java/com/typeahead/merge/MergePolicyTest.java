@@ -1,11 +1,5 @@
 package com.typeahead.merge;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.typeahead.config.IndexConfig;
 import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
@@ -14,8 +8,22 @@ import com.typeahead.reader.IndexReader;
 import com.typeahead.util.TestSet;
 import com.typeahead.util.TestUtil;
 import com.typeahead.writer.IndexWriter;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
 
 public class MergePolicyTest {
+
+    Logger logger;
+
+    MergePolicyTest(){
+        logger = LoggerFactory.getLogger(getClass());
+    }
+
 	/**
 	 * TODO: This test case is not proper and needs to be completed when implementation
 	 * of {@link MergePolicy} is completed.
@@ -33,7 +41,9 @@ public class MergePolicyTest {
 		//making sure index does not exist already.
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 		
 		writer.createIndex();
 		reader.setMergeFactor(3);
@@ -53,7 +63,9 @@ public class MergePolicyTest {
 		//Cleaning the test index.
 		try {
 			writer.deleteIndex();
-		} catch (IndexDoesNotExistException e) {}
+		} catch (IndexDoesNotExistException e) {
+            logger.error(e.toString());
+        }
 	}
 	
 	@Test

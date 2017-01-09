@@ -1,15 +1,16 @@
 package com.typeahead.writer;
 
+import com.typeahead.constants.FileExtension;
+import com.typeahead.exceptions.IndexAlreadyExistException;
+import com.typeahead.exceptions.IndexDoesNotExistException;
+import com.typeahead.index.Document;
+import com.typeahead.index.Index;
+import com.typeahead.utils.FileUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.typeahead.constants.FileExtension;
-import com.typeahead.exceptions.IndexAlreadyExistException;
-import com.typeahead.exceptions.IndexDoesNotExistException;
-import com.typeahead.index.Index;
-import com.typeahead.utils.FileUtil;
 /**
  * Util class for {@Link Index} to create/read/maintain files related to index.
  * @author ronakkhunt
@@ -32,7 +33,7 @@ public class IndexWriterUtil {
 		String indexPath = index.getDataDirectory() + index.getName();
 		
 		File indexDirectory = new File(indexPath);
-		if(indexDirectory.exists() && indexDirectory.isDirectory() ) { 
+		if(indexDirectory.exists() && indexDirectory.isDirectory() ) {
 			return true;
 		}
 		return false;
@@ -53,14 +54,10 @@ public class IndexWriterUtil {
 		//Creating required directories recursively.
 		File rootDirectory = new File(rootPath);
 		rootDirectory.mkdirs();
-		
-		try {
-			_createIndexFiles(rootPath);
-		} catch (IOException e) {
-			throw e;
-		}
-		
-	}
+
+        _createIndexFiles(rootPath);
+
+    }
 	
 	/**
 	 * Helper method to create initial files for {@link Index}
@@ -145,7 +142,7 @@ public class IndexWriterUtil {
 
 	/**
 	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#fieldFSTMap}
-	 * @param mergeLevel 
+	 * @param mergeLevel
 	 * @param index
 	 * @return
 	 */
@@ -156,7 +153,7 @@ public class IndexWriterUtil {
 	
 	/**
 	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#mapping}
-	 * @param mergeLevel 
+	 * @param mergeLevel
 	 * @param index
 	 * @return
 	 */
@@ -167,7 +164,7 @@ public class IndexWriterUtil {
 
 	/**
 	 * Returns the {@link File} object to read/write data from/to disk for {@link Index#metadata}
-	 * @param mergeLevel 
+	 * @param mergeLevel
 	 * @param index
 	 * @return
 	 */
