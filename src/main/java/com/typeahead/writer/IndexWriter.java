@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -133,8 +134,8 @@ public class IndexWriter {
 		Map<String, Document> inMemoryDataMap = index.getInMemoryDataMap();
 		
 		//setting global document sequence number to document being added.
-		Long documentSequenceNumber = index.getDocumentSequenceNumber();
-		document.setSequenceId(documentSequenceNumber);
+		AtomicLong documentSequenceNumber = index.getDocumentSequenceNumber();
+		document.setSequenceId(documentSequenceNumber.get());
 		
 		try {
 			if(!dataMap.containsKey(id)) {
@@ -153,7 +154,7 @@ public class IndexWriter {
 				flushDocument(document);
 				
 				//incrementing global document sequence number
-				index.setDocumentSequenceNumber(documentSequenceNumber + 1);
+				index.incrementDocumentSequenceNumber();
 				
 				mergePolicy.ensurePolicy();
 				
@@ -263,12 +264,14 @@ public class IndexWriter {
 	
 	@SuppressWarnings({ "unchecked" })
 	/**
-	 * Simply creates deep copy of given HashMap.
+	 * Simply creates deep copy of given HashMap by stringifying map and again converting it back
+	 * to Map.
 	 * @param inputMap
 	 * @return
 	 */
 	private Map<String, Map<String, Map<Character, IndexState>>> getCopyOfFieldFSTMap(
 			Map<String, Map<String, Map<Character, IndexState>>> inputMap) {
+		
 		
 		Map<String, Map<String, Map<Character, IndexState>>> outputMap = null;
 		

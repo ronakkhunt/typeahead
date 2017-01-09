@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.typeahead.writer.IndexWriter;
 
@@ -19,7 +20,7 @@ public class Index {
 	/**
 	 * Global sequence for {@link Document}.
 	 */
-	private Long currentDocumentNumber;
+	private AtomicLong currentDocumentNumber;
 	
 	
 	/**
@@ -69,10 +70,10 @@ public class Index {
 		
 		metadata = new HashMap<String, Object>();
 		metadata.put("maxMergeLevel", 3);
-		metadata.put("mergeFactor", 10);
+		metadata.put("mergeFactor", 100);
 		metadata.put("version", 1);
 		
-		this.currentDocumentNumber = Long.valueOf("1");
+		this.currentDocumentNumber = new AtomicLong(1);
 		
 		this.name = name;
 		dataDirectory = _getDataDirectoryPath();
@@ -132,6 +133,13 @@ public class Index {
 		return dataDirectory;
 	}
 	
+	/** Increment the global sequence by one.
+	 * 
+	 */
+	public void incrementDocumentSequenceNumber() {
+		this.currentDocumentNumber.incrementAndGet();
+	}
+	
 	/**********************************************************************************
 	 ****************************    GETTERS AND SETTERS    ***************************
 	 **********************************************************************************/
@@ -168,11 +176,11 @@ public class Index {
 	 * Returns global current document sequence number. 
 	 * @return
 	 */
-	public Long getDocumentSequenceNumber() {
+	public AtomicLong getDocumentSequenceNumber() {
 		return this.currentDocumentNumber;
 	}
 	
-	public void setDocumentSequenceNumber(Long sequenceNumber) {
+	public void setDocumentSequenceNumber(AtomicLong sequenceNumber) {
 		this.currentDocumentNumber = sequenceNumber;
 	}
 	
@@ -256,5 +264,4 @@ public class Index {
 	public void setMetadata(Map<String, Object> metadata) {
 		this.metadata = metadata;
 	}
-
 }
