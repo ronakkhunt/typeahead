@@ -57,6 +57,11 @@ public class Document {
 		return entity;
 	}
 	
+	/**
+	 * Making this method private. Nobody should be able to set this directly.
+	 * TODO: later provide functionality like {{@link Map#putAll(Map)} to multiple keys
+	 * @param entity
+	 */
 	private void setEntity(Map<String, String> entity) {
 		this.entity = entity;
 	}

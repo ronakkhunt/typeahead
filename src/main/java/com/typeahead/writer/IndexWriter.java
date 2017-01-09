@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typeahead.config.IndexConfig;
 import com.typeahead.constants.FileExtension;
 import com.typeahead.constants.FileName;
@@ -13,6 +15,7 @@ import com.typeahead.exceptions.IndexAlreadyExistException;
 import com.typeahead.exceptions.IndexDoesNotExistException;
 import com.typeahead.index.Document;
 import com.typeahead.index.Index;
+import com.typeahead.index.IndexState;
 import com.typeahead.index.services.IndexAddService;
 import com.typeahead.index.services.IndexDeleteService;
 import com.typeahead.merge.MergePolicy;
@@ -36,7 +39,10 @@ public class IndexWriter {
 	IndexWriterService writerService;
 	IndexWriterUtil writerUtil;
 	IndexConfig indexConfig;
+	
+	ObjectMapper mapper;
 	public IndexWriter(IndexConfig config){
+		mapper = new ObjectMapper();
 		writerService = new IndexWriterService();
 		indexConfig = config;
 		mergePolicy = new MergePolicy(this);
@@ -244,9 +250,38 @@ public class IndexWriter {
 		File metadata = writerUtil.getMetadataFile();
 		
 		writerService.write(indexDataMap, getDataMapDocumentsToFlush());
-		writerService.write(fieldFSTMap, index.getFieldFSTMap());
+		
+		/**
+		 * To avoid ConcurrentModificationException occurring due to multiple thread tries to <br>
+		 * write to map when jackson is trying to write data onto the disk. 
+		 */
+		writerService.write(fieldFSTMap, getCopyOfFieldFSTMap(index.getFieldFSTMap()));
+		
 		writerService.write(mapping, index.getMapping());
 		writerService.write(metadata, index.getMetadata());
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	/**
+	 * Simply creates deep copy of given HashMap.
+	 * @param inputMap
+	 * @return
+	 */
+	private Map<String, Map<String, Map<Character, IndexState>>> getCopyOfFieldFSTMap(
+			Map<String, Map<String, Map<Character, IndexState>>> inputMap) {
+		
+		Map<String, Map<String, Map<Character, IndexState>>> outputMap = null;
+		
+		try {
+			String stringMap = mapper.writeValueAsString(inputMap);
+			 outputMap = mapper.readValue(stringMap, HashMap.class);
+			
+		} catch (JsonProcessingException e) {
+
+		} catch (IOException e) {
+			
+		}
+		return outputMap;
 	}
 	
 	/**
@@ -283,7 +318,6 @@ public class IndexWriter {
 		mergeDataMapFile(startSegmentNumber, mergeFactor, mergeLevel);
 //		for(int i = 0; i < mergeFactor; i++) {
 //			read file segment with version startSegmentNumber and put all data in single object like HashMap
-			
 //			startSegmentNumber -= 1;
 //		}
 	}

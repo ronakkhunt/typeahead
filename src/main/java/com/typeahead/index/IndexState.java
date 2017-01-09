@@ -23,7 +23,7 @@ public class IndexState {
 	
 	@Override
 	public String toString(){
-		return "[nextState="+nextState+" <-->set="+ Arrays.toString(output.toArray())  +"]";
+		return "["+nextState+" --> "+ Arrays.toString(output.toArray()) +"]";
 	}
 	
 	public Set<String> getOutput() {
