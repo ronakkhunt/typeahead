@@ -140,8 +140,8 @@ public class IndexWriter {
 		Map<String, Document> inMemoryDataMap = index.getInMemoryDataMap();
 		
 		//setting global document sequence number to document being added.
-		AtomicLong documentSequenceNumber = index.getDocumentSequenceNumber();
-		document.setSequenceId(documentSequenceNumber.get());
+		long documentSequenceNumber = index.getAndIncrementDocumentSequenceNumber();
+		document.setSequenceId(documentSequenceNumber);
 		
 		try {
 			if(!dataMap.containsKey(id)) {
@@ -158,9 +158,6 @@ public class IndexWriter {
 				 * Writing each Document to disk to avoid data loss, incase of crash.
 				 */
 				flushDocument(document);
-				
-				//incrementing global document sequence number
-				index.incrementDocumentSequenceNumber();
 				
 				mergePolicy.ensurePolicy();
 				

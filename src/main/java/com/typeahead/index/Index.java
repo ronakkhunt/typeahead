@@ -20,7 +20,7 @@ public class Index {
 	/**
 	 * Global sequence for {@link Document}.
 	 */
-	private AtomicLong currentDocumentNumber;
+	volatile private Long currentDocumentNumber;
 	
 	
 	/**
@@ -73,7 +73,7 @@ public class Index {
 		metadata.put("mergeFactor", 100);
 		metadata.put("version", 1);
 		
-		this.currentDocumentNumber = new AtomicLong(1);
+		this.currentDocumentNumber = new Long(1);
 		
 		this.name = name;
 		dataDirectory = _getDataDirectoryPath();
@@ -133,16 +133,31 @@ public class Index {
 		return dataDirectory;
 	}
 	
-	/** Increment the global sequence by one.
-	 * 
+	/**
+	 * Returns global current document sequence number and increment it by one.
+	 * As of now, only one thread, at a time, will be able to access this method which will ensure
+	 * properly increment sequence in multi-threaded environment. 
+	 * @return
 	 */
-	public void incrementDocumentSequenceNumber() {
-		this.currentDocumentNumber.incrementAndGet();
+	public long getAndIncrementDocumentSequenceNumber() {
+		synchronized (currentDocumentNumber) {
+			System.out.println(currentDocumentNumber+"--"+Thread.currentThread().getName());
+			return this.currentDocumentNumber++;
+		}
 	}
 	
 	/**********************************************************************************
 	 ****************************    GETTERS AND SETTERS    ***************************
 	 **********************************************************************************/
+	/**
+	 * This method is not useful, it is being user for concurrency testing purpose only, and can
+	 * be removed in future.
+	 * @return
+	 */
+	@Deprecated
+	public long getDocumentSequenceNumber() {
+		return this.currentDocumentNumber;
+	}
 	
 	public Map<String, Document> getInMemoryDataMap() {
 		return inMemoryDataMap;
@@ -171,19 +186,6 @@ public class Index {
 	public int getVersion() {
 		return (Integer)this.metadata.get("version");
 	}
-	
-	/**
-	 * Returns global current document sequence number. 
-	 * @return
-	 */
-	public AtomicLong getDocumentSequenceNumber() {
-		return this.currentDocumentNumber;
-	}
-	
-	public void setDocumentSequenceNumber(AtomicLong sequenceNumber) {
-		this.currentDocumentNumber = sequenceNumber;
-	}
-	
 	
 	public String getName() {
 		return name;
