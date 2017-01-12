@@ -18,11 +18,7 @@ import java.util.List;
 
 public class MergePolicyTest {
 
-    Logger logger;
-
-    MergePolicyTest(){
-        logger = LoggerFactory.getLogger(getClass());
-    }
+    public static final Logger logger = LoggerFactory.getLogger(MergePolicyTest.class);
 
 	/**
 	 * TODO: This test case is not proper and needs to be completed when implementation

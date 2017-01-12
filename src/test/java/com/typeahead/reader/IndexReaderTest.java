@@ -20,13 +20,10 @@ import java.io.IOException;
 
 public class IndexReaderTest {
 
-    Logger logger;
-	@Rule
+    public static final Logger logger = LoggerFactory.getLogger(IndexReaderTest.class);;
+	
+    @Rule
 	public ExpectedException exception = ExpectedException.none();
-
-    IndexReaderTest(){
-        logger = LoggerFactory.getLogger(getClass());
-    }
 
 	/**
 	 * Test mostly related to {@link IndexReader#_readDataMapFile}, <br>

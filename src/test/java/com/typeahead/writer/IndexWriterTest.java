@@ -21,11 +21,8 @@ import java.util.List;
 
 public class IndexWriterTest {
 
-    Logger logger;
+    public static final Logger logger = LoggerFactory.getLogger(IndexWriterTest.class);
 
-    IndexWriterTest(){
-        logger = LoggerFactory.getLogger(getClass());
-    }
 	@Test
 	public void deleteDocumentTest() throws IndexAlreadyExistException, IOException, IndexDoesNotExistException {
 		String indexName = "_delete_doc_test";

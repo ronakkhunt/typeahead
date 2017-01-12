@@ -136,12 +136,12 @@ public class Index {
 	/**
 	 * Returns global current document sequence number and increment it by one.
 	 * As of now, only one thread, at a time, will be able to access this method which will ensure
-	 * properly increment sequence in multi-threaded environment. 
+	 * properly incremented sequence in multi-threaded environment. 
 	 * @return
 	 */
 	public long getAndIncrementDocumentSequenceNumber() {
 		synchronized (currentDocumentNumber) {
-			System.out.println(currentDocumentNumber+"--"+Thread.currentThread().getName());
+//			System.out.println(currentDocumentNumber+"--"+Thread.currentThread().getName());
 			return this.currentDocumentNumber++;
 		}
 	}

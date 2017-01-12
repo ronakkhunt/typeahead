@@ -29,8 +29,7 @@ public class IndexAddService {
 		}
 	}
 	
-	private void indexField(Index index,
-			Map<String, Map<Character,IndexState>> fieldFSTMap,
+	private void indexField(Index index, Map<String, Map<Character,IndexState>> fieldFSTMap,
 			String data, String output) {
 		
 		String []data_tokens = TokenUtils.getTokens(data);
@@ -42,7 +41,8 @@ public class IndexAddService {
 		}
 	}
 	
-	private void indexToken(Index index, Map<String, Map<Character,IndexState>> fieldFSTMap, String token, String output) {
+	private void indexToken(Index index, Map<String, Map<Character,IndexState>> fieldFSTMap, 
+			String token, String output) {
 		
 		int l = token.length();
 		String state = index.getRootString() + token;
@@ -55,12 +55,15 @@ public class IndexAddService {
 			String st = state.substring(0, i+1);
 			String nst = state.substring(0, j);
 			
-			if(!fieldFSTMap.containsKey(st) ){
+			if(!fieldFSTMap.containsKey(st)){
 				Set<String> idSet = new HashSet<String>();
 				idSet.add(output);
+				
 				Map<Character, IndexState> valueMap = new HashMap<Character, IndexState>();
 				valueMap.put(ch, new IndexState(idSet, nst));
+				
 				fieldFSTMap.put(st, valueMap);
+			
 			}else{
 				Map<Character, IndexState> valueMap = fieldFSTMap.get(st);
 				
@@ -69,9 +72,11 @@ public class IndexAddService {
 				}else{
 					Set<String> idSet = new HashSet<String>();
 					idSet.add(output);
+			
 					valueMap.put(ch, new IndexState(idSet, nst));
 				}
 			}
+			
 		}
 
 	}

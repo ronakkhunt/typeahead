@@ -20,7 +20,7 @@ import java.util.List;
 
 public class IndexSearchServiceTest {
 
-    Logger logger;
+    public static final Logger logger = LoggerFactory.getLogger(IndexSearchServiceTest.class);
     IndexWriterUtil writerUtil;
     IndexWriter writer;
     IndexReader reader;
@@ -28,7 +28,6 @@ public class IndexSearchServiceTest {
     IndexConfig config;
 
     public IndexSearchServiceTest() throws IOException {
-        logger = LoggerFactory.getLogger(getClass());
         String indexName = "_test_search";
         config = new IndexConfig(indexName);
         reader = new IndexReader(config);

@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,10 +25,6 @@ import com.typeahead.merge.MergePolicy;
 import com.typeahead.reader.services.IndexReaderService;
 import com.typeahead.utils.FileUtil;
 import com.typeahead.writer.services.IndexWriterService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
 
 /**
@@ -36,7 +34,8 @@ import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
  */
 public class IndexWriter {
 
-	Logger logger;
+	public static final Logger logger = LoggerFactory.getLogger(IndexWriter.class);
+	
 	/**
 	 * Merge policy, which is used to merge the segment of index.
 	 */
@@ -48,8 +47,9 @@ public class IndexWriter {
 	
 	ObjectMapper mapper;
 	public IndexWriter(IndexConfig config){
-		logger = LoggerFactory.getLogger(getClass());
+		
 		mapper = new ObjectMapper();
+		
 		writerService = new IndexWriterService();
 		indexConfig = config;
 		mergePolicy = new MergePolicy(this);
@@ -213,8 +213,6 @@ public class IndexWriter {
 			//append documentId to the file.
 			writerService.append(file, document.getId() + ",");
 		}
-		
-		
 	}
 	
 	
@@ -255,11 +253,7 @@ public class IndexWriter {
 		
 		writerService.write(indexDataMap, getDataMapDocumentsToFlush());
 		
-		/**
-		 * To avoid ConcurrentModificationException occurring due to multiple thread tries to <br>
-		 * write to map when jackson is trying to write data onto the disk. 
-		 */
-		writerService.write(fieldFSTMap, getCopyOfFieldFSTMap(index.getFieldFSTMap()));
+		writerService.write(fieldFSTMap, index.getFieldFSTMap());
 		
 		writerService.write(mapping, index.getMapping());
 		writerService.write(metadata, index.getMetadata());
@@ -272,10 +266,8 @@ public class IndexWriter {
 	 * @param inputMap
 	 * @return
 	 */
-	private Map<String, Map<String, Map<Character, IndexState>>> getCopyOfFieldFSTMap(
+	private Map<String, Map<String, Map<Character, IndexState>>> getCopyOfFieldFSTMap1(
 			Map<String, Map<String, Map<Character, IndexState>>> inputMap) {
-		
-		
 		Map<String, Map<String, Map<Character, IndexState>>> outputMap = null;
 		
 		try {
@@ -286,6 +278,23 @@ public class IndexWriter {
 			logger.error(e.toString());
 		} catch (IOException e) {
 			logger.error(e.toString());
+		}
+		return outputMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Map<String, Document> getCopyOfDataMap1(Map<String, Document> inputMap) {
+		
+		Map<String, Document> outputMap = null;
+		
+		try {
+			String stringMap = mapper.writeValueAsString(inputMap);
+			outputMap = mapper.readValue(stringMap, HashMap.class);
+			
+		} catch (JsonProcessingException e) {
+//			e.printStackTrace();
+		} catch (IOException e) {
+//			e.printStackTrace();
 		}
 		return outputMap;
 	}
@@ -302,11 +311,12 @@ public class IndexWriter {
 		
 		Map<String, Document> inMemoryDataMap = indexConfig.getIndex().getInMemoryDataMap();
 		
-		inMemoryDataMapResult.putAll(inMemoryDataMap);
+		if(inMemoryDataMap != null) {
+			inMemoryDataMapResult.putAll(inMemoryDataMap);
 		
 		//Once these document are written into segment. we need to clear this Map
 		inMemoryDataMap.clear();
-		
+		}
 		return inMemoryDataMapResult;
 				
 		
